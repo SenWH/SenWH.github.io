@@ -3,11 +3,11 @@
   <title>部落格</title>
   
   
-  <link href="http://example.com/atom.xml" rel="self"/>
+  <link href="https://senwh.github.io/atom.xml" rel="self"/>
   
-  <link href="http://example.com/"/>
+  <link href="https://senwh.github.io/"/>
   <updated>2024-11-18T03:11:15.849Z</updated>
-  <id>http://example.com/</id>
+  <id>https://senwh.github.io/</id>
   
   <author>
     <name>Sen</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="http://example.com/2024/11/18/hello-world/"/>
-    <id>http://example.com/2024/11/18/hello-world/</id>
+    <link href="https://senwh.github.io/2024/11/18/hello-world/"/>
+    <id>https://senwh.github.io/2024/11/18/hello-world/</id>
     <published>2024-11-18T03:26:59.691Z</published>
     <updated>2024-11-18T03:11:15.849Z</updated>
     

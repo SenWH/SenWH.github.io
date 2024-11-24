@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 项目入门-《苍穹外卖》 · 部落格</title><meta name="description" content="项目入门-《苍穹外卖》 - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
 </head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">项目入门-《苍穹外卖》</h1><div class="post-info">Nov 20, 2024</div><div class="post-content"><h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><h2 id="如何将前端数据转发至后端处理？"><a href="#如何将前端数据转发至后端处理？" class="headerlink" title="如何将前端数据转发至后端处理？"></a>如何将前端数据转发至后端处理？</h2><h3 id="nginx反向代理"><a href="#nginx反向代理" class="headerlink" title="nginx反向代理"></a>nginx反向代理</h3><p>前端生成数据-&gt; nginx监听主机及端口（在conf配置 http默认端口80）-&gt; nginx识别传入路径forward到指定后端地址（Tomcat-默认8080端口）</p>
 <p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/nginx_1.png" alt="nginx_1"></p>
-<p><img src="/2024/11/19/Code-Array/nginx_2.png" alt="nginx_2"></p>
+<p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/nginx_2.png" alt="nginx_2"></p>
 <ul>
 <li>如果只有本机一台服务器，webservers为localhost</li>
 <li>可为多台server分配不同权重以达到分流作用</li>
@@ -12,7 +12,7 @@
 <li><p>Swagger 为后端接口提供测试界面（取代postman）</p>
 </li>
 </ul>
-<h3 id="Swagger常用注解"><a href="#Swagger常用注解" class="headerlink" title="Swagger常用注解"></a>Swagger常用注解</h3><p><img src="/2024/11/19/Code-Array/swagger_1.png" alt="swagger_1"></p>
+<h3 id="Swagger常用注解"><a href="#Swagger常用注解" class="headerlink" title="Swagger常用注解"></a>Swagger常用注解</h3><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/swagger_1.png" alt="swagger_1"></p>
 <h1 id="Day2"><a href="#Day2" class="headerlink" title="Day2"></a>Day2</h1><h2 id="需求分析和设计"><a href="#需求分析和设计" class="headerlink" title="需求分析和设计"></a>需求分析和设计</h2><ol>
 <li>产品原型</li>
 <li>接口设计（Yapi）</li>
@@ -27,7 +27,7 @@
 <li>Signature：用于验证其在传输过程中未被篡改</li>
 </ul>
 <p>工作流程：</p>
-<p><img src="/2024/11/19/Code-Array/swagger_2.png" alt="swagger_2"></p>
+<p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/swagger_2.png" alt="swagger_2"></p>
 <ol>
 <li><strong>用户登录</strong>：用户使用用户名和密码登录。</li>
 <li><strong>生成 JWT</strong>：服务器验证用户凭据后，创建一个包含用户信息和其他必要声明的 JWT，并使用一个密钥对其进行签名。</li>

@@ -38,7 +38,21 @@
 </ol>
 <p><strong>简而言之：用户成功登录一次后，服务器创建了一个牌子（jwt）并签名（服务器亲自生成的）给用户（以后你就是熟人），用户拿到JWT后，以后每次发送数据都带上牌子（我是熟人），服务器检验签名及JWT信息让该用户进屋。</strong></p>
 <h3 id="不同类中还有什么办法可以获取某个变量？"><a href="#不同类中还有什么办法可以获取某个变量？" class="headerlink" title="不同类中还有什么办法可以获取某个变量？"></a>不同类中还有什么办法可以获取某个变量？</h3><p>只要在同一线程中(Thread.currentThread().getID())，可以使用ThreadLocal来存取某一变量，该变量只有在同一线程内部才能获取</p>
-<h3 id="Handle如何执行？"><a href="#Handle如何执行？" class="headerlink" title="Handle如何执行？"></a>Handle如何执行？</h3><h3 id="重启项目TCP握手没结束，端口占用"><a href="#重启项目TCP握手没结束，端口占用" class="headerlink" title="重启项目TCP握手没结束，端口占用"></a>重启项目TCP握手没结束，端口占用</h3></div></article></div><div data-thread-key="2024/11/20/项目入门-《苍穹外卖》/" data-title="项目入门-《苍穹外卖》" data-url="https://senwh.github.io/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+<h3 id="Handle如何执行？"><a href="#Handle如何执行？" class="headerlink" title="Handle如何执行？"></a>Handle如何执行？</h3><h3 id="代码开发思路"><a href="#代码开发思路" class="headerlink" title="代码开发思路"></a>代码开发思路</h3><ul>
+<li>Yapi查看接口（参数，返回值，请求方法）</li>
+<li>定义DTO对象作为传输参数-&gt;controller（地址映射）</li>
+<li>controller新建并调用对应service</li>
+<li>service 调用 mapper方法</li>
+<li>mapper语句由mapper.xml绑定，yml文件指定扫描xml地址</li>
+<li>mapper拿到data，封装进Result返回给前端</li>
+</ul>
+<h3 id="分页PageHelper实现原理"><a href="#分页PageHelper实现原理" class="headerlink" title="分页PageHelper实现原理"></a>分页PageHelper实现原理</h3><p>PageHelper.startPage的底层实现，ThreadLocal线程存Page进内存里，在执行查询之前将Page作为sql语句的limit语句拼进XML对应语句里<strong>（动态SQL）</strong></p>
+<p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/page_1.png" alt="page_1"></p>
+<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><ul>
+<li>Result 在查询时指定泛型， 其他操作不用添加</li>
+<li>对象属性拷贝：BeanUtils.copyProperties(src,des)</li>
+</ul>
+</div></article></div><div data-thread-key="2024/11/20/项目入门-《苍穹外卖》/" data-title="项目入门-《苍穹外卖》" data-url="https://senwh.github.io/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
 (function() {
     var ds = document.createElement('script');
     ds.type = 'text/javascript';ds.async = true;

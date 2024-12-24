@@ -66,9 +66,84 @@
 </ul>
 <p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/AOP_1.png" alt="AOP_1"></p>
 <p><strong>AOP底层实现</strong>：如果目标类使用了增强，则生成目标对象的代理对象执行方法（原因是不能乱动原来的对象）</p>
+<h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><ol>
+<li>配置属性类</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">@ConfigurationProperties(prefix = &quot;sky.alioss&quot;)</span><br><span class="line">@Data</span><br><span class="line">public class AliOssProperties &#123;</span><br><span class="line"></span><br><span class="line">    private String endpoint;</span><br><span class="line">    private String accessKeyId;</span><br><span class="line">    private String accessKeySecret;</span><br><span class="line">    private String bucketName;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从yml文件获取值赋值给属性类。定义配置类，加载配置类时，创建对象并获取属性类的值。</p>
+<ol start="2">
+<li>文件上传控制器</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String originalFilename = file.getOriginalFilename();</span><br><span class="line">//截取后缀</span><br><span class="line">String extension = originalFilename.substring(originalFilename.lastIndexOf(&quot;.&quot;));</span><br><span class="line">String objectName = UUID.randomUUID().toString() + extension; //搞个独一无人的新名字防止重名</span><br><span class="line">aliOssUtil.upload(file.getBytes(),objectName);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>上传工具类进行上传</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 创建OSSClient实例。</span><br><span class="line">OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);</span><br><span class="line"></span><br><span class="line">// 创建PutObject请求。</span><br><span class="line">ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(bytes));</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="SQL语句"><a href="#SQL语句" class="headerlink" title="SQL语句"></a>SQL语句</h2><p><strong>批量插入</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;insertBatch&quot;&gt;</span><br><span class="line">    insert into dish_flavor (dish_id,name,value)</span><br><span class="line">        values</span><br><span class="line">   &lt;foreach collection=&quot;flavors&quot; item=&quot;df&quot; separator=&quot;,&quot;&gt;</span><br><span class="line">       (#&#123;df.dish_id&#125;,#&#123;df.name&#125;,#&#123;df.value&#125;)</span><br><span class="line">   &lt;/foreach&gt;</span><br><span class="line">&lt;/insert&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>返回数据库自增值（主键）的方法</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;insert&quot; useGeneratedKeys=&quot;true&quot; keyProperty=&quot;id&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>左连接（外）&#x2F;右连接（外）&#x2F;全连接（外）&#x2F;内连接</strong></p>
+<ul>
+<li><p>左&#x2F;右连接：主表数据完全保留, 副表字段匹配到则数据保留,填充到结果集, 未匹配到数据置空.</p>
+<p><code>SELECT *</code><br><code>FROM table1</code><br><code>LEFT JOIN table2 ON table1.column_name = table2.column_name;</code></p>
+</li>
+<li><p>全连接：两表取并集</p>
+</li>
+<li><p>内连接：取交集</p>
+</li>
+</ul>
+<h1 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h1><h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><ul>
+<li><p>key-value形式保存在内存中</p>
+</li>
+<li><p>常用数据类型：<img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_1.png" alt="redis_1"></p>
+</li>
+<li><p>常用命令：</p>
+<ul>
+<li>String： Setex key second value  (数据的过期时间，过期后释放内存)</li>
+<li>Hash: HSET key field value&#x2F;HGET key&#x2F;HDEL key&#x2F;HKEYS key &#x2F; HVALUES key</li>
+<li>List: <img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_2.png" alt="redis_2"></li>
+<li>Set：<img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_3.png" alt="redis_3"></li>
+<li>sort(有序集合)：<img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_4.png" alt="redis_4"></li>
+</ul>
+<h2 id="spring-redis"><a href="#spring-redis" class="headerlink" title="spring-redis"></a>spring-redis</h2><p><strong>流程</strong>：配置—&gt;配置类（Bean）通过该对象操作Redis</p>
+</li>
+</ul>
+<h1 id="Day5"><a href="#Day5" class="headerlink" title="Day5"></a>Day5</h1><h2 id="HttpClient"><a href="#HttpClient" class="headerlink" title="HttpClient"></a>HttpClient</h2><p><strong>Http协议的客户端编程工具包</strong>：向服务端请求GET&#x2F;发送POST数据</p>
+<p><strong>执行流程</strong>：创建httpclient对象-&gt;创建请求对象（HttpPost）-&gt;发送请求(对象封装为StringEntity)-&gt;解析结果-&gt;关闭资源</p>
 <h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><ul>
-<li>Result 在查询时指定泛型， 其他操作不用添加</li>
-<li>对象属性拷贝：BeanUtils.copyProperties(src,des)</li>
+<li><p>Result 在查询时指定泛型， 其他操作不用添加</p>
+</li>
+<li><p>对象属性拷贝：BeanUtils.copyProperties(src,des)</p>
+</li>
+<li><p>@AllArgsConstructor 生成构造函数注解</p>
+</li>
+<li><p>@RequestParam从请求的查询参数中获取值</p>
+<ul>
+<li>例： <code>?param1=value1&amp;param2=value2</code></li>
+</ul>
+</li>
+<li><p>@PathVariable 从URL 路径中的部分获取值</p>
+</li>
+<li><p>例：&#x2F;users&#x2F;{userId}</p>
+</li>
+<li><p>构建器构建对象模式：例</p>
+<ul>
+<li><pre><code>Dish dish = Dish.builder()
+                .status(status)
+                        .id(id)
+                                .build();
+</code></pre>
+</li>
+</ul>
+</li>
 </ul>
 </div></article></div><div data-thread-key="2024/11/20/项目入门-《苍穹外卖》/" data-title="项目入门-《苍穹外卖》" data-url="https://senwh.github.io/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
 (function() {

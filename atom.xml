@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>部落格</title>
+  
+  
+  <link href="https://senwh.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://senwh.github.io/"/>
+  <updated>2025-01-06T13:05:22.301Z</updated>
+  <id>https://senwh.github.io/</id>
+  
+  <author>
+    <name>Sen</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>二叉树</title>
+    <link href="https://senwh.github.io/2025/01/06/%E4%BA%8C%E5%8F%89%E6%A0%91/"/>
+    <id>https://senwh.github.io/2025/01/06/%E4%BA%8C%E5%8F%89%E6%A0%91/</id>
+    <published>2025-01-06T13:05:22.000Z</published>
+    <updated>2025-01-06T13:05:22.301Z</updated>
+    
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>栈与队列</title>
+    <link href="https://senwh.github.io/2025/01/04/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/"/>
+    <id>https://senwh.github.io/2025/01/04/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97/</id>
+    <published>2025-01-04T13:48:17.000Z</published>
+    <updated>2025-01-06T13:04:04.378Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h2><p><strong>Stack常用：</strong>push()\pop()\empty()\peek()</p><p><strong>Queue常用：</strong></p><ul><li>LinkList offer()\poll()\isEmpty()</li></ul><p><strong>ArrayDeque</strong> 既可用做栈也可用做队列</p><h2 id="栈应用"><a href="#栈应用" class="headerlink" title="栈应用"></a>栈应用</h2><p><a href="https://leetcode.cn/problems/evaluate-reverse-polish-notation/">LC.150. 逆波兰表达式求值</a></p><ul><li><p>String转数字Integer.valueOf(s) </p></li><li><p>数字匹配str.matches(“-?\d+”)  </p></li><li><p>字符转数字 Character.getNumericValue()</p></li></ul><h2 id="队列应用"><a href="#队列应用" class="headerlink" title="队列应用"></a>队列应用</h2><p><a href="https://leetcode.cn/problems/sliding-window-maximum/">LC.239. 滑动窗口最大值*</a></p><ul><li><strong>单调队列</strong>：使用双端队列组装单调队列，每次加入比较队列尾部元素</li></ul><p><a href="https://leetcode.cn/problems/top-k-frequent-elements/">LC.347. 前 K 个高频元素</a></p><ul><li><strong>优先队列</strong><ul><li>底层是堆的原理</li><li>常用法：       <ul><li>PriorityQueue&lt;int[]&gt; pq &#x3D; new PriorityQueue&lt;&gt;((pair1, pair2) -&gt; pair2[1] - pair1[1]); 该表示为小顶堆反之大顶堆</li></ul></li><li>哈希表常用<ul><li>遍历：Map.Entry&lt;Integer, Integer&gt; entry : map.entrySet()</li><li>获取key和值getKey(),getValue()</li></ul></li></ul></li></ul><p><strong>Tips</strong></p><ul><li><p>堆</p><ul><li><p>完全二叉树+任意父节点大于（小于）等于 左右孩子</p></li><li><p>实际存储：顺序存储（数组）</p></li><li><p>建堆：自底向上：先建子堆 -》再自上至底   O（n）</p></li><li><p>排序：堆顶与最后元素交换，向下调整新元素 O（n*logn）n-1交换 * logn调整</p></li></ul></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;基本知识&quot;&gt;&lt;a href=&quot;#基本知识&quot; class=&quot;headerlink&quot; title=&quot;基本知识&quot;&gt;&lt;/a&gt;基本知识&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Stack常用：&lt;/strong&gt;push()&#92;pop()&#92;empty()&#92;peek()&lt;/p&gt;
+&lt;p&gt;&lt;s</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>字符串</title>
+    <link href="https://senwh.github.io/2024/12/24/%E5%AD%97%E7%AC%A6%E4%B8%B2/"/>
+    <id>https://senwh.github.io/2024/12/24/%E5%AD%97%E7%AC%A6%E4%B8%B2/</id>
+    <published>2024-12-24T13:34:41.000Z</published>
+    <updated>2025-01-02T10:45:48.553Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="基本特征"><a href="#基本特征" class="headerlink" title="基本特征"></a>基本特征</h1><ul><li>常用库函数：<ul><li>字符串转数组 s.toCharArray() &#x2F; 数组转字符串new String(s_char)</li><li>s.concat(str)连接字符串</li><li>StringBuilder ()-&gt;可用append追加字符串，toString()用于输出字符串，insert(index ,str), setCharAt(index,char),charAt</li></ul></li><li>字符串不可变，不能修改某一位置的值，只能创建新的空间</li></ul><h2 id="反转单词"><a href="#反转单词" class="headerlink" title="反转单词"></a>反转单词</h2><ul><li>法1：先反转整个字符串，再反转单词</li><li>法2：取word后，头插法-&gt;StringBuilder </li><li>去多余空格，String.trim()可以去前后，或直接判断</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/reverse-words-in-a-string/">LC151. 反转字符串中的单词</a></p><h2 id="字串匹配"><a href="#字串匹配" class="headerlink" title="字串匹配"></a>字串匹配</h2>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;基本特征&quot;&gt;&lt;a href=&quot;#基本特征&quot; class=&quot;headerlink&quot; title=&quot;基本特征&quot;&gt;&lt;/a&gt;基本特征&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;常用库函数：&lt;ul&gt;
+&lt;li&gt;字符串转数组 s.toCharArray() &amp;#x2F; 数组转字符串new S</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>哈希表</title>
+    <link href="https://senwh.github.io/2024/12/07/%E5%93%88%E5%B8%8C%E8%A1%A8/"/>
+    <id>https://senwh.github.io/2024/12/07/%E5%93%88%E5%B8%8C%E8%A1%A8/</id>
+    <published>2024-12-07T13:03:35.000Z</published>
+    <updated>2025-01-01T13:59:24.798Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="基本特征"><a href="#基本特征" class="headerlink" title="基本特征"></a>基本特征</h2><ul><li>常见结构：数组&#x2F;set&#x2F;map</li><li>常用于判断某元素是否出现过</li></ul><h2 id="字母异位词"><a href="#字母异位词" class="headerlink" title="字母异位词"></a>字母异位词</h2><p><strong>字母异位词是通过重新排列不同单词或短语的字母而形成的单词或短语，并使用所有原字母一次。</strong></p><ul><li>两种解法：Map-HashMap&#x2F;用ascii数组-&gt;records[word-‘a’]-适用于’a’-‘z’的情况</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/valid-anagram/">LC242. 有效的字母异位词</a></p><ul><li>相同字母的个数通过循环+-判断是否用完</li><li>异位词相关题目的母体</li></ul><p><a href="https://leetcode.cn/problems/group-anagrams/">LC49. 字母异位词分组</a></p><ul><li>注意分List和String方法的使用</li></ul><p><a href="https://leetcode.cn/problems/find-all-anagrams-in-a-string/">LC438. 找到字符串中所有字母异位词</a></p><ul><li>滑动窗口(否则超时)</li></ul><h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><ul><li><p>去除重复元素</p></li><li><p>Set&lt;&gt; &#x3D; new HashSet&lt;&gt;()</p></li><li><p>常用：contains&#x2F;add&#x2F;clear&#x2F;size&#x2F;for(i:set)</p></li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/intersection-of-two-arrays/">LC349. 两个数组的交集</a></p><h2 id="四数相加"><a href="#四数相加" class="headerlink" title="四数相加"></a>四数相加</h2><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/4sum-ii/">LC454. 四数相加 II</a></p><ul><li>两数和四数和都一样，使用HashMap存n遍历&#x2F;n^2遍历，用空间换另外一半的时间</li></ul><h2 id="N数之和"><a href="#N数之和" class="headerlink" title="N数之和"></a>N数之和</h2><ul><li>难点在于保证三元组不重复-&gt;如何执行去重操作</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/3sum/">LC15. 三数之和</a></p><ul><li>返回数值而不是索引，联想-&gt;排序</li><li>双指针</li><li>排完序后的去重方便很多-&gt;第一位和前一位比，left和right都与下一位比，一样的跳过即可</li></ul><p><a href="https://leetcode.cn/problems/4sum/">LC18. 四数之和</a></p><ul><li>参照三数之和思路，注意思考四元组第二个数的去重方式</li><li>考虑int相加后越界问题，用long来转换结果</li></ul><h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><ul><li><p>size()是列表方法 length()是数组方法</p></li><li><p>List操作</p><ul><li>size()&#x2F;add()&#x2F;get()</li></ul></li><li><p>Arrays操作</p><ul><li>sort</li><li>asList()</li></ul></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;基本特征&quot;&gt;&lt;a href=&quot;#基本特征&quot; class=&quot;headerlink&quot; title=&quot;基本特征&quot;&gt;&lt;/a&gt;基本特征&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;常见结构：数组&amp;#x2F;set&amp;#x2F;map&lt;/li&gt;
+&lt;li&gt;常用于判断某元素是否出现过&lt;/li&gt;
+&lt;/</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>链表</title>
+    <link href="https://senwh.github.io/2024/11/29/%E9%93%BE%E8%A1%A8/"/>
+    <id>https://senwh.github.io/2024/11/29/%E9%93%BE%E8%A1%A8/</id>
+    <published>2024-11-29T03:25:48.000Z</published>
+    <updated>2024-12-01T07:35:02.677Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="手撕链表"><a href="#手撕链表" class="headerlink" title="手撕链表"></a>手撕链表</h1><h2 id="单链表-双链表"><a href="#单链表-双链表" class="headerlink" title="单链表&#x2F;双链表"></a>单链表&#x2F;双链表</h2><p><strong>解题思路</strong></p><ul><li>注意空节点没有指针域</li><li>添加虚拟节点dummyHead，可减少对头节点的判别</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/design-linked-list/">LC.707. 设计链表</a></p><p><a href="https://leetcode.cn/problems/reverse-linked-list/">LC206. 反转链表</a></p><p><strong>解题思路</strong></p><ul><li>两种解法：迭代&#x2F;递归</li><li>除了pre和cur指针，还要定义temp存cur.next</li></ul><p><a href="https://leetcode.cn/problems/swap-nodes-in-pairs/">LC24. 两两交换链表中的节点</a></p><p><a href="https://leetcode.cn/problems/intersection-of-two-linked-lists-lcci/">LC面试题 02.07. 链表相交</a></p><ul><li>注意是找两个指针地址一致</li></ul><h2 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h2><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/remove-nth-node-from-end-of-list/">LC19. 删除链表的倒数第 N 个结点</a></p><ul><li>遍历两次&#x2F;快慢指针</li></ul><p><a href="https://leetcode.cn/problems/linked-list-cycle-ii/">LC142. 环形链表 II</a></p><ul><li>访问标志数组&#x2F;快慢指针</li><li>判断入口位置：头指针位置和相遇位置同时同速出发相遇的位置（画图可知）</li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;手撕链表&quot;&gt;&lt;a href=&quot;#手撕链表&quot; class=&quot;headerlink&quot; title=&quot;手撕链表&quot;&gt;&lt;/a&gt;手撕链表&lt;/h1&gt;&lt;h2 id=&quot;单链表-双链表&quot;&gt;&lt;a href=&quot;#单链表-双链表&quot; class=&quot;headerlink&quot; title=&quot;单链表</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>树莓派5配置</title>
+    <link href="https://senwh.github.io/2024/11/26/%E6%A0%91%E8%8E%93%E6%B4%BE5%E9%85%8D%E7%BD%AE/"/>
+    <id>https://senwh.github.io/2024/11/26/%E6%A0%91%E8%8E%93%E6%B4%BE5%E9%85%8D%E7%BD%AE/</id>
+    <published>2024-11-26T08:15:18.000Z</published>
+    <updated>2024-11-26T17:47:16.328Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="在线配置（荐）"><a href="#在线配置（荐）" class="headerlink" title="在线配置（荐）"></a>在线配置（荐）</h1><h2 id="命令行连接wifi"><a href="#命令行连接wifi" class="headerlink" title="命令行连接wifi"></a>命令行连接wifi</h2><p><code>nmcli dev wifi connect &quot;你的WiFi名称&quot; password &quot;你的WiFi密码&quot; ifname wlan0</code></p><p>执行完后自动生成后面离线配置</p><h1 id="离线配置"><a href="#离线配置" class="headerlink" title="离线配置"></a>离线配置</h1><h2 id="1-检查-NetworkManager-是否已安装-检查-NetworkManager-服务状态"><a href="#1-检查-NetworkManager-是否已安装-检查-NetworkManager-服务状态" class="headerlink" title="1. 检查 NetworkManager 是否已安装 &amp; 检查 NetworkManager 服务状态"></a>1. 检查 NetworkManager 是否已安装 &amp; 检查 NetworkManager 服务状态</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dpkg -l | grep network-manager</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status NetworkManager</span><br></pre></td></tr></table></figure><h2 id="2-创建uuid"><a href="#2-创建uuid" class="headerlink" title="2.  创建uuid"></a>2.  创建uuid</h2><p>在 NetworkManager 的配置文件中，uuid 字段是用来标识一个连接的唯一标识符。这个 UUID（通用唯一标识符）确保每个连接在系统中都是唯一的，避免出现连接冲突。</p><p>执行 uuidgen</p><h2 id="3-创建配置文件-sudo-nano-etc-NetworkManager-system-connections-SSID-nmconnect"><a href="#3-创建配置文件-sudo-nano-etc-NetworkManager-system-connections-SSID-nmconnect" class="headerlink" title="3. 创建配置文件 sudo nano &#x2F;etc&#x2F;NetworkManager&#x2F;system-connections&#x2F;(SSID).nmconnect"></a>3. 创建配置文件 sudo nano &#x2F;etc&#x2F;NetworkManager&#x2F;system-connections&#x2F;(SSID).nmconnect</h2><p><code>(ssid).nmconnect</code> 文件的内容通常包括网络连接的所有必要信息，如 SSID、加密方式、密码、IP 配置等。其格式可能类似于 <code>.nmconnection</code> 文件，但具体格式和内容依赖于使用此文件的工具或系统。</p><p>例如，一个 <code>nmconnect</code> 文件可能包含以下内容：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[connection]</span><br><span class="line">id=MyWiFi</span><br><span class="line">uuid=abcd1234-5678-9101-2345-6789abcdef01</span><br><span class="line">type=wifi</span><br><span class="line">autoconnect=true</span><br><span class="line">interface-name=wlan0</span><br><span class="line"></span><br><span class="line">[wifi]</span><br><span class="line">ssid=MyWiFi</span><br><span class="line">mode=infrastructure</span><br><span class="line">security=wifi-security</span><br><span class="line"></span><br><span class="line">[wifi-security]</span><br><span class="line">key-mgmt=wpa-psk</span><br><span class="line">psk=MyPassword</span><br><span class="line"></span><br><span class="line">[ipv4]</span><br><span class="line">method=auto #默认DHCP</span><br><span class="line"></span><br><span class="line">#method=manual 静态IP</span><br><span class="line">#addresses=192.168.1.100/24</span><br><span class="line">#gateway=192.168.1.1</span><br><span class="line">#dns=8.8.8.8;8.8.4.4</span><br><span class="line"></span><br><span class="line">[ipv6]</span><br><span class="line">method=ignore</span><br></pre></td></tr></table></figure><h2 id="4-重启-NetworkManager"><a href="#4-重启-NetworkManager" class="headerlink" title="4. 重启 NetworkManager"></a>4. 重启 NetworkManager</h2><p><code>sudo systemctl restart NetworkManager</code></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;在线配置（荐）&quot;&gt;&lt;a href=&quot;#在线配置（荐）&quot; class=&quot;headerlink&quot; title=&quot;在线配置（荐）&quot;&gt;&lt;/a&gt;在线配置（荐）&lt;/h1&gt;&lt;h2 id=&quot;命令行连接wifi&quot;&gt;&lt;a href=&quot;#命令行连接wifi&quot; class=&quot;header</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>项目入门-《苍穹外卖》</title>
+    <link href="https://senwh.github.io/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/"/>
+    <id>https://senwh.github.io/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/</id>
+    <published>2024-11-20T15:03:52.000Z</published>
+    <updated>2025-01-04T11:56:23.673Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><h2 id="如何将前端数据转发至后端处理？"><a href="#如何将前端数据转发至后端处理？" class="headerlink" title="如何将前端数据转发至后端处理？"></a>如何将前端数据转发至后端处理？</h2><h3 id="nginx反向代理"><a href="#nginx反向代理" class="headerlink" title="nginx反向代理"></a>nginx反向代理</h3><p>前端生成数据-&gt; nginx监听主机及端口（在conf配置 http默认端口80）-&gt; nginx识别传入路径forward到指定后端地址（Tomcat-默认8080端口）</p><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/nginx_1.png" alt="nginx_1"></p><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/nginx_2.png" alt="nginx_2"></p><ul><li>如果只有本机一台服务器，webservers为localhost</li><li>可为多台server分配不同权重以达到分流作用</li></ul><h2 id="接口设计与测试"><a href="#接口设计与测试" class="headerlink" title="接口设计与测试"></a>接口设计与测试</h2><ul><li><p>Yapi提供界面管理和维护接口</p></li><li><p>Swagger 为后端接口提供测试界面（取代postman）</p></li></ul><h3 id="Swagger常用注解"><a href="#Swagger常用注解" class="headerlink" title="Swagger常用注解"></a>Swagger常用注解</h3><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/swagger_1.png" alt="swagger_1"></p><h1 id="Day2"><a href="#Day2" class="headerlink" title="Day2"></a>Day2</h1><h2 id="需求分析和设计"><a href="#需求分析和设计" class="headerlink" title="需求分析和设计"></a>需求分析和设计</h2><ol><li>产品原型</li><li>接口设计（Yapi）</li><li>数据库设计</li></ol><h2 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h2><h3 id="运行流程"><a href="#运行流程" class="headerlink" title="运行流程"></a>运行流程</h3><p>用户请求-&gt;拦截器（校验JWT令牌）-&gt;Controller-&gt;service-&gt;mapper-&gt;database</p><h3 id="如何理解JWT？"><a href="#如何理解JWT？" class="headerlink" title="如何理解JWT？"></a>如何理解JWT？</h3><p>JWT（JSON Web Token）是一种数据形式，通常放在http头部被校验。</p><p>包括：</p><ul><li>Header：令牌类型（JWT） + 签名所使用算法</li><li>Payload：一些claims，可以理解为该JWT的设置参数</li><li>Signature：用于验证其在传输过程中未被篡改</li></ul><p>工作流程：</p><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/swagger_2.png" alt="swagger_2"></p><ol><li><strong>用户登录</strong>：用户使用用户名和密码登录。</li><li><strong>生成 JWT</strong>：服务器验证用户凭据后，创建一个包含用户信息和其他必要声明的 JWT，并使用一个密钥对其进行签名。</li><li><strong>发送 JWT</strong>：服务器将 JWT 发送给客户端。</li><li><strong>存储 JWT</strong>：客户端通常将 JWT 存储在本地存储（如 Cookies）或内存中（如 localStorage）。</li><li><strong>发送请求</strong>：客户端在随后的每个请求中将 JWT 放在 HTTP 头部（通常是 Authorization 字段）中发送给服务器。</li><li><strong>验证 JWT</strong>：服务器接收到请求后，验证 JWT 的签名以确保其未被篡改，并根据有效载荷中的声明来处理请求。</li></ol><p><strong>简而言之：用户成功登录一次后，服务器创建了一个牌子（jwt）并签名（服务器亲自生成的）给用户（以后你就是熟人），用户拿到JWT后，以后每次发送数据都带上牌子（我是熟人），服务器检验签名及JWT信息让该用户进屋。</strong></p><h3 id="不同类中还有什么办法可以获取某个变量？"><a href="#不同类中还有什么办法可以获取某个变量？" class="headerlink" title="不同类中还有什么办法可以获取某个变量？"></a>不同类中还有什么办法可以获取某个变量？</h3><p>只要在同一线程中(Thread.currentThread().getID())，可以使用ThreadLocal来存取某一变量，该变量只有在同一线程内部才能获取</p><h3 id="Handle如何执行？"><a href="#Handle如何执行？" class="headerlink" title="Handle如何执行？"></a>Handle如何执行？</h3><h3 id="代码开发思路"><a href="#代码开发思路" class="headerlink" title="代码开发思路"></a>代码开发思路</h3><ul><li>Yapi查看接口（参数，返回值，请求方法）</li><li>定义DTO对象作为传输参数-&gt;controller（地址映射）</li><li>controller新建并调用对应service</li><li>service 调用 mapper方法</li><li>mapper语句由mapper.xml绑定，yml文件指定扫描xml地址</li><li>mapper拿到data，封装进Result返回给前端</li></ul><h3 id="分页PageHelper实现原理"><a href="#分页PageHelper实现原理" class="headerlink" title="分页PageHelper实现原理"></a>分页PageHelper实现原理</h3><p>PageHelper.startPage的底层实现，ThreadLocal线程存Page进内存里，在执行查询之前将Page作为sql语句的limit语句拼进XML对应语句里<strong>（动态SQL）</strong></p><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/page_1.png" alt="page_1"></p><h1 id="Day3"><a href="#Day3" class="headerlink" title="Day3"></a>Day3</h1><h2 id="公共字段自动填充"><a href="#公共字段自动填充" class="headerlink" title="公共字段自动填充"></a>公共字段自动填充</h2><h2 id="AOP理解"><a href="#AOP理解" class="headerlink" title="AOP理解"></a>AOP理解</h2><p><strong>面向切面编程</strong> ：对某个类方法源代码不进行修改的情况下实现增强</p><p><strong>关键元素</strong>：通过<strong>切面</strong>描述<strong>通知（存放共性（增强）操作的方法，被存在通知类种）</strong>和<strong>切入点（从连接点中选取）</strong>的关系</p><p><strong>步骤</strong></p><ol><li>导入坐标</li><li>制作连接点（DAO层通常是增删改查）</li><li>制作通知（类）</li><li>定义切入点-&gt;切入点的定义依托一个无实际意义的方法 <ul><li>为了更细粒度的控制，可以增加自定义注解，在需要增强方法前做好标识</li></ul></li><li>绑定切入点和通知关系（切面）-定义增强时机(before，around….)</li></ol><ul><li>4.5的操作实际上都在通知类</li></ul><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/AOP_1.png" alt="AOP_1"></p><p><strong>AOP底层实现</strong>：如果目标类使用了增强，则生成目标对象的代理对象执行方法（原因是不能乱动原来的对象）</p><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><ol><li>配置属性类</li></ol><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">@ConfigurationProperties(prefix = &quot;sky.alioss&quot;)</span><br><span class="line">@Data</span><br><span class="line">public class AliOssProperties &#123;</span><br><span class="line"></span><br><span class="line">    private String endpoint;</span><br><span class="line">    private String accessKeyId;</span><br><span class="line">    private String accessKeySecret;</span><br><span class="line">    private String bucketName;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>从yml文件获取值赋值给属性类。定义配置类，加载配置类时，创建对象并获取属性类的值。</p><ol start="2"><li>文件上传控制器</li></ol><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String originalFilename = file.getOriginalFilename();</span><br><span class="line">//截取后缀</span><br><span class="line">String extension = originalFilename.substring(originalFilename.lastIndexOf(&quot;.&quot;));</span><br><span class="line">String objectName = UUID.randomUUID().toString() + extension; //搞个独一无人的新名字防止重名</span><br><span class="line">aliOssUtil.upload(file.getBytes(),objectName);</span><br></pre></td></tr></table></figure><ol start="3"><li>上传工具类进行上传</li></ol><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 创建OSSClient实例。</span><br><span class="line">OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);</span><br><span class="line"></span><br><span class="line">// 创建PutObject请求。</span><br><span class="line">ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(bytes));</span><br></pre></td></tr></table></figure><h2 id="SQL语句"><a href="#SQL语句" class="headerlink" title="SQL语句"></a>SQL语句</h2><p><strong>批量插入</strong></p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;insertBatch&quot;&gt;</span><br><span class="line">    insert into dish_flavor (dish_id,name,value)</span><br><span class="line">        values</span><br><span class="line">   &lt;foreach collection=&quot;flavors&quot; item=&quot;df&quot; separator=&quot;,&quot;&gt;</span><br><span class="line">       (#&#123;df.dish_id&#125;,#&#123;df.name&#125;,#&#123;df.value&#125;)</span><br><span class="line">   &lt;/foreach&gt;</span><br><span class="line">&lt;/insert&gt;</span><br></pre></td></tr></table></figure><p><strong>返回数据库自增值（主键）的方法</strong></p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;insert&quot; useGeneratedKeys=&quot;true&quot; keyProperty=&quot;id&quot;&gt;</span><br></pre></td></tr></table></figure><p><strong>左连接（外）&#x2F;右连接（外）&#x2F;全连接（外）&#x2F;内连接</strong></p><ul><li><p>左&#x2F;右连接：主表数据完全保留, 副表字段匹配到则数据保留,填充到结果集, 未匹配到数据置空.</p><p><code>SELECT *</code><br><code>FROM table1</code><br><code>LEFT JOIN table2 ON table1.column_name = table2.column_name;</code></p></li><li><p>全连接：两表取并集</p></li><li><p>内连接：取交集</p></li></ul><h1 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h1><h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><ul><li><p>key-value形式保存在内存中</p></li><li><p>常用数据类型：<img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_1.png" alt="redis_1"></p></li><li><p>常用命令：</p><ul><li>String： Setex key second value  (数据的过期时间，过期后释放内存)</li><li>Hash: HSET key field value&#x2F;HGET key&#x2F;HDEL key&#x2F;HKEYS key &#x2F; HVALUES key</li><li>List: <img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_2.png" alt="redis_2"></li><li>Set：<img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_3.png" alt="redis_3"></li><li>sort(有序集合)：<img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/redis_4.png" alt="redis_4"></li></ul><h2 id="spring-redis"><a href="#spring-redis" class="headerlink" title="spring-redis"></a>spring-redis</h2><p><strong>流程</strong>：配置—&gt;配置类（Bean）通过该对象操作Redis</p></li></ul><h1 id="Day5"><a href="#Day5" class="headerlink" title="Day5"></a>Day5</h1><h2 id="HttpClient"><a href="#HttpClient" class="headerlink" title="HttpClient"></a>HttpClient</h2><p><strong>Http协议的客户端编程工具包</strong>：向服务端请求GET&#x2F;发送POST数据</p><p><strong>执行流程</strong>：创建httpclient对象-&gt;创建请求对象（HttpPost）-&gt;发送请求(对象封装为StringEntity)-&gt;解析结果-&gt;关闭资源</p><h2 id="小程序微信登录流程"><a href="#小程序微信登录流程" class="headerlink" title="小程序微信登录流程"></a>小程序微信登录流程</h2><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/api-login.png" alt="api-login"></p><ul><li>小程序要调用wx（第三方）：获取临时授权码（wx.login）-&gt;后端服务器以该码+app信息调用微信接口获取身份信息-&gt;后端服务器为小程序返回身份信息（token）-&gt;后续小程序在请求时都携带该token用于验证身份</li></ul><h1 id="Day6"><a href="#Day6" class="headerlink" title="Day6"></a>Day6</h1><h2 id="缓存与Spring-Cache"><a href="#缓存与Spring-Cache" class="headerlink" title="缓存与Spring Cache"></a>缓存与Spring Cache</h2><p><strong>用途</strong>：多用户同时访问数据库时导致性能下降（查询商品等），引入缓存机制（放入内存）</p><p><strong>Spring Cache</strong>：基于注解实现缓存的功能（Redis）等</p><ul><li><p>CachePut(cacheNames &#x3D; “A”, key&#x3D;”#B(和形参有关)”) &#x2F;&#x2F;key构造为A：：B 将返回结果作为值存入Redis</p></li><li><p>Cacheable 查询缓存，若没查询到调数据库并存入</p></li><li><p>CacheEvict 清理缓存（cacheNames &#x3D; ，allEntries &#x3D; true(CacheNames下的全删了)）</p></li></ul><h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><ul><li><p>Result 在查询时指定泛型， 其他操作不用添加</p></li><li><p>对象属性拷贝：BeanUtils.copyProperties(src,des)</p></li><li><p>@AllArgsConstructor 生成构造函数注解</p></li><li><p>@RequestParam从请求的查询参数中获取值</p><ul><li>例： <code>?param1=value1&amp;param2=value2</code></li></ul></li><li><p>@PathVariable 从URL 路径中的部分获取值</p></li><li><p>例：&#x2F;users&#x2F;{userId}</p></li><li><p>构建器构建对象模式：例</p><ul><li><pre><code>Dish dish = Dish.builder()                .status(status)                .id(id)                .build();</code></pre></li></ul></li><li><p>对象封装时：DTO前端-&gt;后端，VO 反之</p></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;Day-1&quot;&gt;&lt;a href=&quot;#Day-1&quot; class=&quot;headerlink&quot; title=&quot;Day 1&quot;&gt;&lt;/a&gt;Day 1&lt;/h1&gt;&lt;h2 id=&quot;如何将前端数据转发至后端处理？&quot;&gt;&lt;a href=&quot;#如何将前端数据转发至后端处理？&quot; class=&quot;he</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>数组</title>
+    <link href="https://senwh.github.io/2024/11/19/%E6%95%B0%E7%BB%84/"/>
+    <id>https://senwh.github.io/2024/11/19/%E6%95%B0%E7%BB%84/</id>
+    <published>2024-11-19T02:59:22.000Z</published>
+    <updated>2025-01-01T14:04:29.547Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h1><h2 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h2><p><strong>算法特征</strong></p><ul><li>有序不重复数组</li><li>时间复杂度O(logn)  空间复杂度O(1)</li></ul><p><strong>解题思路</strong></p><ol><li>定义左右下标-&gt;左闭右闭（<strong>荐</strong>）&#x2F;左闭右开（right指向数组后一位）</li><li>While循环条件与1定义相关，左闭右闭循环条件含left&#x3D;right，right指向数组数据</li></ol><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/">LC34. 在排序数组中查找元素的第一个和最后一个位置</a></p><ul><li>变形：数组含重复元素</li><li>基于二分查找思想获取左右边界值</li></ul><p><a href="https://leetcode.cn/problems/sqrtx/">LC69.x 的平方根</a></p><ul><li>平方根结果可以通过二分查找</li><li>Tips：long可表示64位，注意精度问题</li></ul><h2 id="双指针"><a href="#双指针" class="headerlink" title="双指针"></a>双指针</h2><h3 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h3><p><strong>算法特征</strong></p><ul><li><p>空间复杂度O（1）</p></li><li><p>移除元素</p></li><li><p>不改变元素相对顺序</p></li><li><p>代替暴力解双循环</p></li></ul><p><strong>解题思路</strong></p><ul><li>使用暴力解时注意判断条件里数组长度的变化</li><li>关注慢指针在遇到条件时如何变化, 快指针通过for循环一直递加</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/remove-element/">LC27.移除数组元素</a></p><ul><li>慢指针前进</li></ul><p><a href="https://leetcode.cn/problems/backspace-string-compare/">LC844.比较含退格的字符串</a></p><ul><li>慢指针后退</li></ul><h3 id="首尾指针"><a href="#首尾指针" class="headerlink" title="首尾指针"></a>首尾指针</h3><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/squares-of-a-sorted-array/">LC977. 有序数组的平方</a></p><ul><li>空间复杂度O（n）</li></ul><h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p><strong>算法特征</strong></p><ul><li><p>求最大&#x2F;最小长度子数组</p></li><li><p>代替暴力解双循环</p></li></ul><p><strong>解题思路</strong></p><ul><li>关注左右指针变化的条件</li><li>内部while循环放左指针移动方案</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/minimum-size-subarray-sum/">LC209. 长度最小的子数组</a></p><ul><li>时间复杂度：O(n)</li></ul><p><a href="https://leetcode.cn/problems/fruit-into-baskets/">LC904. 水果成篮</a> </p><ul><li><p>求长度最大子数组</p></li><li><p>熟悉map的使用：Map&lt;&gt; &#x3D; new HashMap&lt;&gt;() getOrDefault &#x2F; remove&#x2F; size &#x2F; get &#x2F;put</p></li></ul><p><a href="https://leetcode.cn/problems/minimum-window-substring/">LC.76. 最小覆盖子串</a></p><ul><li>滑动窗口基础+熟悉字符串和HashMap的使用</li></ul><h2 id="数组的边界处理（模拟过程）"><a href="#数组的边界处理（模拟过程）" class="headerlink" title="数组的边界处理（模拟过程）"></a>数组的边界处理（模拟过程）</h2><p><strong>解题思路</strong></p><ul><li>在遍历时，各边界的判断保持相同的原则</li></ul><p><strong>相关例题</strong></p><p><a href="https://leetcode.cn/problems/spiral-matrix-ii/">LC.59. 螺旋矩阵 II</a></p><ul><li>注意每圈的起点坐标</li><li>左闭右开</li></ul><p><a href="https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/">LCR.146. 螺旋遍历二维数组</a></p><ul><li>左闭右闭</li></ul><h3 id="前缀和"><a href="#前缀和" class="headerlink" title="前缀和"></a>前缀和</h3><p><strong>解题思路</strong></p><ul><li>用一个数组记录累加和，空间换时间</li></ul><p><strong>相关例题</strong></p><p><a href="https://kamacoder.com/problempage.php?pid=1070">Kama58.区间和</a></p><ul><li>一维前缀和</li></ul><p><a href="https://kamacoder.com/problempage.php?pid=1044">Kama开发商购买土地</a></p><ul><li>二维前缀和</li></ul><p><strong>Note</strong></p><ul><li><p>对于无符号数除法，例：右移&gt;&gt;1进行位运算比除以2运算速度更快</p></li><li><p>int 4字节 long 8字节 float 4字节 double 8字节  前两表示整数精度更高 后两者表示浮点数（牺牲精度增加表示范围）</p></li><li><p>Integer.MAX_VALUE 和 Integer.MIN_VALUE</p></li><li><p>简单判断语句 （等式）? A：B；</p></li><li><p>字符串操作：</p><ul><li>长度：str.length()</li><li>连接：string1.concat(string2) &#x2F; “ “ + “ “</li><li>访问元素：charAt(index)</li><li>转数组：byte[] Str2 &#x3D; Str1.getBytes()</li><li>子串：substring(int beginIndex, int endIndex) 不包含结束索引</li></ul></li><li><p>Mapper操作：</p><ul><li>访问value： get(key)  &#x2F; 迭代 <strong>for</strong> (Integer i : mapper.keySet())</li><li>删除：remove(key) &#x2F; clear()</li><li>元素数量：size() </li><li>检查键值存在：containsKey() &#x2F; containsValue()</li><li><strong>不存在时赋予key默认值：getOrDefault</strong></li><li>比较元素要用equals</li></ul></li><li><p>输入数据处理</p><ul><li>new Scanner(System.in) </li><li>数据访问：int scanner.nextInt() &#x2F;String scanner.next()</li></ul></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;数组&quot;&gt;&lt;a href=&quot;#数组&quot; class=&quot;headerlink&quot; title=&quot;数组&quot;&gt;&lt;/a&gt;数组&lt;/h1&gt;&lt;h2 id=&quot;二分查找&quot;&gt;&lt;a href=&quot;#二分查找&quot; class=&quot;headerlink&quot; title=&quot;二分查找&quot;&gt;&lt;/a&gt;二分查找&lt;/h</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>

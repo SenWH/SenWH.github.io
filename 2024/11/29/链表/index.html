@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 链表 · 部落格</title><meta name="description" content="链表 - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">链表</h1><div class="post-info">Nov 29, 2024</div><div class="post-content"><h1 id="手撕链表"><a href="#手撕链表" class="headerlink" title="手撕链表"></a>手撕链表</h1><h2 id="单链表-双链表"><a href="#单链表-双链表" class="headerlink" title="单链表&#x2F;双链表"></a>单链表&#x2F;双链表</h2><p><strong>解题思路</strong></p>
+<ul>
+<li>注意空节点没有指针域</li>
+<li>添加虚拟节点dummyHead，可减少对头节点的判别</li>
+</ul>
+<p><strong>相关例题</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/design-linked-list/">LC.707. 设计链表</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/reverse-linked-list/">LC206. 反转链表</a></p>
+<p><strong>解题思路</strong></p>
+<ul>
+<li>两种解法：迭代&#x2F;递归</li>
+<li>除了pre和cur指针，还要定义temp存cur.next</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/swap-nodes-in-pairs/">LC24. 两两交换链表中的节点</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/intersection-of-two-linked-lists-lcci/">LC面试题 02.07. 链表相交</a></p>
+<ul>
+<li>注意是找两个指针地址一致</li>
+</ul>
+<h2 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h2><p><strong>相关例题</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/remove-nth-node-from-end-of-list/">LC19. 删除链表的倒数第 N 个结点</a></p>
+<ul>
+<li>遍历两次&#x2F;快慢指针</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/linked-list-cycle-ii/">LC142. 环形链表 II</a></p>
+<ul>
+<li>访问标志数组&#x2F;快慢指针</li>
+<li>判断入口位置：头指针位置和相遇位置同时同速出发相遇的位置（画图可知）</li>
+</ul>
+</div></article></div><div data-thread-key="2024/11/29/链表/" data-title="链表" data-url="https://senwh.github.io/2024/11/29/%E9%93%BE%E8%A1%A8/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><script>var disqus_shortname = 'Sen';
+var disqus_identifier = '2024/11/29/链表/';
+var disqus_title = '链表';
+var disqus_url = 'https://senwh.github.io/2024/11/29/链表/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2024/12/07/%E5%93%88%E5%B8%8C%E8%A1%A8/" class="prev">上一篇</a><a href="/2024/11/26/%E6%A0%91%E8%8E%93%E6%B4%BE5%E9%85%8D%E7%BD%AE/" class="next">下一篇</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

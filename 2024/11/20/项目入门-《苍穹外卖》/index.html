@@ -122,6 +122,13 @@
 <ul>
 <li>小程序要调用wx（第三方）：获取临时授权码（wx.login）-&gt;后端服务器以该码+app信息调用微信接口获取身份信息-&gt;后端服务器为小程序返回身份信息（token）-&gt;后续小程序在请求时都携带该token用于验证身份</li>
 </ul>
+<h2 id="微信支付"><a href="#微信支付" class="headerlink" title="微信支付"></a>微信支付</h2><p><img src="/2024/11/20/%E9%A1%B9%E7%9B%AE%E5%85%A5%E9%97%A8-%E3%80%8A%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96%E3%80%8B/wc-offer.png" alt="wc-offer"></p>
+<ul>
+<li>服务端为小程序返回订单号</li>
+<li>点击支付后，服务端根据订单号和<strong>小程序各种配置信息调</strong>用wx接口获取<strong>交易标识</strong>并返回给小程序</li>
+<li>小程序根据标识直接调用wx接口请求支付</li>
+<li>为小程序返回支付结果&#x2F;根据交易标识中的回调地址为服务端返回支付结果</li>
+</ul>
 <h1 id="Day6"><a href="#Day6" class="headerlink" title="Day6"></a>Day6</h1><h2 id="缓存与Spring-Cache"><a href="#缓存与Spring-Cache" class="headerlink" title="缓存与Spring Cache"></a>缓存与Spring Cache</h2><p><strong>用途</strong>：多用户同时访问数据库时导致性能下降（查询商品等），引入缓存机制（放入内存）</p>
 <p><strong>Spring Cache</strong>：基于注解实现缓存的功能（Redis）等</p>
 <ul>
@@ -132,7 +139,16 @@
 <li><p>CacheEvict 清理缓存（cacheNames &#x3D; ，allEntries &#x3D; true(CacheNames下的全删了)）</p>
 </li>
 </ul>
-<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><ul>
+<h1 id="Day10"><a href="#Day10" class="headerlink" title="Day10"></a>Day10</h1><h2 id="SpringTask"><a href="#SpringTask" class="headerlink" title="SpringTask"></a>SpringTask</h2><ul>
+<li>用途：定时执行方法（查询&#x2F;更新状态），启动类增加注解@EnableScheduling</li>
+<li>注解使用：在方法中加入@Scheduled(cron&#x3D;”cron表达式”)  表达式可通过在线网站生成</li>
+<li>通常定义定时类配合mapper操作底层数据库</li>
+</ul>
+<h2 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h2><ul>
+<li>用途：服务端和管理端保持长连接，相比对同一对象的调用和返回，通过它可以实现接收小程序对象数据，并处理转发值管理端（收发面向不同对象）</li>
+<li>创建连接时通常也会经过nginx转发</li>
+</ul>
+<h1 id="Day11"><a href="#Day11" class="headerlink" title="Day11"></a>Day11</h1><h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><ul>
 <li><p>Result 在查询时指定泛型， 其他操作不用添加</p>
 </li>
 <li><p>对象属性拷贝：BeanUtils.copyProperties(src,des)</p>

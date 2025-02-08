@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 面试篇-Redis · 部落格</title><meta name="description" content="面试篇-Redis - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">面试篇-Redis</h1><div class="post-info">Jan 7, 2025</div><div class="post-content"><h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>定义：（恶意）查询一个DB中没有的数据，无返回结果存入Redis，导致每次到需要访问内存</p>
+<p>解决方案：</p>
+<ul>
+<li>缓存空数据<ul>
+<li>缺点：随着空数据增多，内存消耗大</li>
+</ul>
+</li>
+<li>布隆过滤器（在内存中）：放在查询和Redis之间，将所有的key预先加载到过滤器中,每次先查询输入的饿key是否存在，再查询内存（此时一定存在value）。用一个bit数组（只有0，1），定义多个Hash函数，每次将输入哈希映射到bit位图中，若各位置都为（1）即判断数据存在。<ul>
+<li>缺点：有误判风险，bit越大，Hash函数越多，可减小风险。</li>
+</ul>
+</li>
+</ul>
+<h2 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h2><p>定义：（Redis）key设置了过期时间，过期后收到大量并发请求，在缓存重建前，DB被压垮；无缓存的大并发不属于这种情况</p>
+<p>解决方案：</p>
+<ul>
+<li>互斥锁：第一个线程若没查到缓存，上锁直到重建完后再允许其他线程查询<ul>
+<li>保持数据一致性，但性能差（其他线程一直等待解锁）</li>
+</ul>
+</li>
+<li>逻辑过期：等待时间过期到先不清除数据，等待逻辑过期时间。这段时间若有并发数据，开启新线程上锁更新过期时间，旧线程或其他线程不需等待新线程解锁，返回旧数据。直到解锁才用新数据。<ul>
+<li>新旧数据容易产生不一致，但性能高</li>
+<li>缓存中含逻辑过期时间和实际过期时间，前后比后者大。</li>
+</ul>
+</li>
+</ul>
+<h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><p>定义：缓存采用了相同的设置时间，导致缓存在某一时间同时失效&#x2F;Redis宕机（GG），大量并发请求到DB，导致DB压力过重。</p>
+<p>解决方案：</p>
+<ul>
+<li>过期时间+随机值</li>
+<li>集群服务：哨兵模式、集群模式？</li>
+<li>缓存业务添加降级限流策略？ ngxin&#x2F;spring cloud gateway</li>
+<li>业务添加多级缓存</li>
+</ul>
+</div></article></div><div data-thread-key="2025/01/07/面试篇-Redis/" data-title="面试篇-Redis" data-url="https://senwh.github.io/2025/01/07/%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><script>var disqus_shortname = 'Sen';
+var disqus_identifier = '2025/01/07/面试篇-Redis/';
+var disqus_title = '面试篇-Redis';
+var disqus_url = 'https://senwh.github.io/2025/01/07/面试篇-Redis/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/01/06/%E4%BA%8C%E5%8F%89%E6%A0%91/" class="next">下一篇</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

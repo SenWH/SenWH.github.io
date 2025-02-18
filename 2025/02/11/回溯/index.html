@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 回溯 · 部落格</title><meta name="description" content="回溯 - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">回溯</h1><div class="post-info">Feb 11, 2025</div><div class="post-content"><p><strong>递归和回溯的关系</strong>：递归是实现回溯的手段</p>
+<p><strong>回溯题目思路：</strong></p>
+<ul>
+<li>构建树<img src="/./%E5%9B%9E%E6%BA%AF/tree.png" alt="tree"></li>
+<li>for(横向)</li>
+<li>递归纵向</li>
+</ul>
+<p><strong>模板</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void backtracking(参数) &#123;</span><br><span class="line">    if (终止条件) &#123;</span><br><span class="line">        存放结果;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    for (选择：本层集合中元素（树中节点孩子的数量就是集合的大小）) &#123;</span><br><span class="line">        处理节点;</span><br><span class="line">        backtracking(路径，选择列表); // 递归</span><br><span class="line">        回溯，撤销处理结果</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/combinations/">LC77. 组合</a></p>
+<ul>
+<li>将问题构建为一颗n叉树，递归遍历-回溯模板</li>
+<li>ArrayList适用查找替换，LinkedList适用增删</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/letter-combinations-of-a-phone-number/">LC17. 电话号码的字母组合</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/combination-sum/">LC39. 组合总和</a></p>
+<ul>
+<li><pre><code class="java">path.remove(path.size() - 1);
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- ```java</span><br><span class="line">  Arrays.sort(candidates);</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/combination-sum-ii/">LC40. 组合总和 II</a></p>
+<ul>
+<li>去重剪枝</li>
+<li>思考树的横纵向与递归的关系</li>
+</ul>
+<h2 id="分割"><a href="#分割" class="headerlink" title="分割"></a>分割</h2><p><strong>相关例题</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/palindrome-partitioning/">LC131. 分割回文串</a>***</p>
+<ul>
+<li>横向为切割位置</li>
+<li>纵向为剩余字符串</li>
+<li>StringBuilder</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/restore-ip-addresses/">LC93. 复原 IP 地址</a></p>
+<ul>
+<li>横向切割位置</li>
+<li>判别有效字符<ul>
+<li>sb-&gt;string</li>
+<li><strong>Integer.parseInt() String转Int</strong></li>
+<li>0开头长度&gt;1</li>
+<li>255</li>
+</ul>
+</li>
+<li>分隔符连接：String.join(“.”, path)</li>
+</ul>
+<h2 id="子集"><a href="#子集" class="headerlink" title="子集"></a>子集</h2><p><strong>相关例题</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/subsets-ii/">LC90. 子集 II</a></p>
+<ul>
+<li>去重，同组合II方法一致</li>
+<li>数组有序后，对树叶去重</li>
+</ul>
+<h2 id="排列"><a href="#排列" class="headerlink" title="排列"></a>排列</h2><p><strong>相关例题</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/non-decreasing-subsequences/">LC491. 非递减子序列</a></p>
+<ul>
+<li><strong>数组在无序时，用HashSet去重</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/permutations-ii/">LC47. 全排列 II</a>***</p>
+<ul>
+<li>used数组去重横向（false） 纵向（true）</li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/reconstruct-itinerary/">LC332. 重新安排行程</a>（超时）</p>
+<ul>
+<li>字符串的排序    Collections.sort(tickets,(a,b)-&gt;a.get(1).compareTo(b.get(1)));</li>
+<li>字符串比较 tickets.get(i).get(0).equals(path.getLast())</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/n-queens/">LC51. N 皇后</a>***</p>
+<ul>
+<li>三数组 列、45[row+col]、135[row-col+n-1]</li>
+</ul>
+</div></article></div><div data-thread-key="2025/02/11/回溯/" data-title="回溯" data-url="https://senwh.github.io/2025/02/11/%E5%9B%9E%E6%BA%AF/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><script>var disqus_shortname = 'Sen';
+var disqus_identifier = '2025/02/11/回溯/';
+var disqus_title = '回溯';
+var disqus_url = 'https://senwh.github.io/2025/02/11/回溯/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/02/12/%E9%A1%B9%E7%9B%AE%E8%BF%9B%E9%98%B6-%E3%80%8Amall%E9%A1%B9%E7%9B%AE%E3%80%8B/" class="prev">PREV</a><a href="/2025/01/07/%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/" class="next">NEXT</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

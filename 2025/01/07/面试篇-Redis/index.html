@@ -1,13 +1,14 @@
 <!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 面试篇-Redis · 部落格</title><meta name="description" content="面试篇-Redis - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
-</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">面试篇-Redis</h1><div class="post-info">Jan 7, 2025</div><div class="post-content"><h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>定义：（恶意）查询一个DB中没有的数据，无返回结果存入Redis，导致每次到需要访问内存</p>
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">面试篇-Redis</h1><div class="post-info">Jan 7, 2025</div><div class="post-content"><h1 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>定义：（恶意）查询一个DB中没有的数据，无返回结果存入Redis，导致每次到需要访问内存</p>
 <p>解决方案：</p>
 <ul>
 <li>缓存空数据<ul>
 <li>缺点：随着空数据增多，内存消耗大</li>
 </ul>
 </li>
-<li>布隆过滤器（在内存中）：放在查询和Redis之间，将所有的key预先加载到过滤器中,每次先查询输入的饿key是否存在，再查询内存（此时一定存在value）。用一个bit数组（只有0，1），定义多个Hash函数，每次将输入哈希映射到bit位图中，若各位置都为（1）即判断数据存在。<ul>
+<li>布隆过滤器（在内存中）：放在查询和Redis之间，将所有的key预先加载到过滤器中,每次先查询输入的key是否存在，再查询内存（此时一定存在value）。用一个bit数组（只有0，1），定义多个Hash函数，每次将输入哈希映射到bit位图中，若各位置都为（1）即判断数据存在。<ul>
 <li>缺点：有误判风险，bit越大，Hash函数越多，可减小风险。</li>
+<li>实现方案：Redission&#x2F;Guava</li>
 </ul>
 </li>
 </ul>
@@ -32,6 +33,175 @@
 <li>缓存业务添加降级限流策略？ ngxin&#x2F;spring cloud gateway</li>
 <li>业务添加多级缓存</li>
 </ul>
+<h2 id="双写一致性-mysql如何与redis同步"><a href="#双写一致性-mysql如何与redis同步" class="headerlink" title="双写一致性(mysql如何与redis同步)"></a>双写一致性(mysql如何与redis同步)</h2><p>场景一：一致性要求高</p>
+<ul>
+<li>写操作：先删缓存（数据库还没更新）&#x2F;先修改数据库（缓存过期，数据还没更新就读）&#x2F;延时双删（数据库修改前后都删一次缓存，等数据库修改完毕再删，延时多久不能把控）都可能出现<strong>脏数据</strong></li>
+<li>绝对保证一致：读写操作加锁。读操作用共享锁（允许读），写操作用排他锁（不允许其他操作）-redission </li>
+<li>性能差</li>
+</ul>
+<p>场景二：运行延迟一致</p>
+<ul>
+<li>异步通知</li>
+<li>MQ中间件</li>
+<li>canal中间件</li>
+</ul>
+<h2 id="持久化（防止数据redis丢失）"><a href="#持久化（防止数据redis丢失）" class="headerlink" title="持久化（防止数据redis丢失）"></a>持久化（防止数据redis丢失）</h2><p><strong>RDB（Redis Database Backup file）</strong>：防止redis故障数据丢失，将数据备份到磁盘</p>
+<ul>
+<li>执行原理：bgsave fork（克隆）主进程得到子进程，子进程共享主进程内存数据。完成fork后读取内存数据并写入RDB文件。（子进程把页表（虚拟地址和物理地址的映射关系）copy过来慢慢读内存数据，不阻塞主进程）</li>
+<li>在读内存数据过程中，若主进行对内存数据有写操作，将那块内存copy一个副本专用于写（此时似乎和紫当前子进程数据不一致了），更新页表，重新开bgsave本分</li>
+<li>两次备份会丢失</li>
+<li>二进制压缩，体积较小</li>
+</ul>
+<p><strong>AOF（Append Only File）</strong>：将redis写操作命令记录在AOF文件中</p>
+<ul>
+<li><p>设定频率（执行写操作命令）</p>
+</li>
+<li><p>记录命令比RDB文件要大</p>
+</li>
+</ul>
+<h2 id="数据过期策略-内存过期数据如何处理）"><a href="#数据过期策略-内存过期数据如何处理）" class="headerlink" title="数据过期策略(内存过期数据如何处理）"></a>数据过期策略(内存过期数据如何处理）</h2><ul>
+<li><p>惰性删除：数据过期后，访问了才会删（节省查询过期时间的操作时间，但浪费内存）</p>
+</li>
+<li><p>定期删除：每隔一段时间，从数据库里随机抽出一定数量key检查，过期即删除</p>
+<ul>
+<li>slow模式 扫描频率10hz 每次不超过25ms</li>
+<li>fast模式 两次间隔不超过2ms 每次不超过1ms</li>
+</ul>
+</li>
+<li><p>两者配合使用</p>
+</li>
+</ul>
+<h2 id="数据淘汰策略（为已满的redis添加新key，如何替换）"><a href="#数据淘汰策略（为已满的redis添加新key，如何替换）" class="headerlink" title="数据淘汰策略（为已满的redis添加新key，如何替换）"></a>数据淘汰策略（为已满的redis添加新key，如何替换）</h2><ul>
+<li>noeviction：不淘汰，满了不给进</li>
+<li>volatile-ttl：TTL值被淘汰</li>
+<li>allkeys-random：random<ul>
+<li>无太大频率，冷热区分</li>
+</ul>
+</li>
+<li>volatile-random：对设置TTL的key random</li>
+<li>allkeys-lru：基于LRU算法淘汰（Least Recently Used）<ul>
+<li>有冷、热点数据区分</li>
+<li>保证留下的是高频数据</li>
+</ul>
+</li>
+<li>allkeys-lfu：基于LFU算法淘汰（Least Frequently Used）<ul>
+<li>短时高频数据</li>
+<li>促销商品，短时间内可能高频访问，但它不是热点数据</li>
+</ul>
+</li>
+<li>volatile-lfu<ul>
+<li>有需要置顶的数据（不设置TTL，永远不会被淘汰）</li>
+</ul>
+</li>
+</ul>
+<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><p>在服务集群部署（nginx反向代理）的情况下，互斥锁解决不了多个JVM线程并发访问数据不同步问题</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E4%BA%92%E6%96%A5%E9%94%81.png" alt="互斥锁"></p>
+<p>引入外部锁（分布式锁）</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81.png" alt="互斥锁"></p>
+<h2 id="redisson"><a href="#redisson" class="headerlink" title="redisson"></a>redisson</h2><ul>
+<li>底层原理：setnx（set if not exist） + lua脚本（保证原子性）</li>
+</ul>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/setnx.png" alt="setnx"></p>
+<p><strong>如何设置超时时间？</strong></p>
+<ul>
+<li>时间预估+给锁续期（watch-dog。每隔releaseTime&#x2F;3时间续期）</li>
+</ul>
+<p><strong>可重入?</strong> (一个线程内多次加锁)</p>
+<ul>
+<li>用hash结构存储线程信息和重入次数</li>
+<li>防止死锁（一个线程多次进入一个锁的保护块，可能会被阻塞）</li>
+</ul>
+<p><strong>可以解决主从一致性问题？</strong>（主节点负责写修改同步。子节点负责读操作）</p>
+<ul>
+<li>用redisson提供的红锁解决（在超过一半结点都获得锁才认为成功上锁、避免有些结点宕机上锁失败）（性能低），可以用zookeeper来实现</li>
+</ul>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h1 id="集群方案"><a href="#集群方案" class="headerlink" title="集群方案"></a>集群方案</h1><h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><ul>
+<li>主从全量同步（将主节点（Master）上的所有数据完整地复制到从节点（Slave）。这种方式不考虑数据是否已经存在于从节点，而是重新传输所有数据）</li>
+</ul>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5.png" alt="主从同步"></p>
+<p><strong>判断第一次请求</strong>：replication id 标识两个为同一个数据集，若不一致，证明为第一次同步，为子节点更新id值</p>
+<p><strong>保证只同步差异部分</strong>：每次主节点更新数据同时更新offset值，同步更新offset的部分给子节点</p>
+<ul>
+<li><p>增量同步（只将主节点上自上次同步以来发生变化的数据同步到从节点。这种方式通过记录数据的变化来减少不必要的数据传输）</p>
+<p>主节点会记录二进制日志（binlog），从节点通过I&#x2F;O线程读取这些日志，并通过SQL线程应用这些日志来保持数据一致性</p>
+</li>
+</ul>
+<p><strong>主从的方式保证不了redis高可用，主节点宕机</strong></p>
+<h2 id="哨兵模式（Sentinel）"><a href="#哨兵模式（Sentinel）" class="headerlink" title="哨兵模式（Sentinel）"></a>哨兵模式（Sentinel）</h2><p><strong>实现主从集群自动故障恢复，保证高可用</strong></p>
+<ul>
+<li><strong>监控</strong> ping</li>
+<li><strong>自动故障恢复</strong> 选主</li>
+<li><strong>通知</strong>  哨兵会向订阅了相关事件的客户端发送通知，告知它们集群状态的变化</li>
+</ul>
+<p>每秒ping每个实例，某节点发现实例未响应（主观下线），超半数都发现其未响应（客观下线）</p>
+<p><strong>哨兵选主规则：</strong></p>
+<ul>
+<li>优先级+offset值</li>
+<li>主从断联时间长短</li>
+<li>运行id越小优先级高</li>
+</ul>
+<p><strong>脑裂问题</strong>-两个主节点（哨兵选完主节点后，原本主节点可能还在被客户端写入，原主节点回复与哨兵联系后降级未从节点，但此时新版数据在其身上，导致数据出错）</p>
+<p><strong>解决办法：保证宕机时不写入</strong></p>
+<ul>
+<li>设置主节点至少有一个从节点才允许写入</li>
+<li>数据同步延时不能超5s</li>
+</ul>
+<h2 id="分片集群"><a href="#分片集群" class="headerlink" title="分片集群"></a>分片集群</h2><p><strong>解决海量数据存储&#x2F;高并发写问题</strong></p>
+<ul>
+<li><p>多个master，每个master不同数据，存放在不同服务器</p>
+</li>
+<li><p>每个master多个slave</p>
+</li>
+<li><p>master之间ping检测状态</p>
+</li>
+<li><p>客户端访问任意结点可路由到需要的结点</p>
+</li>
+</ul>
+<p><strong>数据如何存储和读取？</strong></p>
+<ul>
+<li>引入哈希槽（16384个）</li>
+<li>每个插槽分配到不同的实例</li>
+<li>key的有效部分（大括号里内容&#x2F;本身）计算哈希值，对16384取余找到插槽，在里面找对应实例</li>
+</ul>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><p>Redis单线程为什么这么快？</p>
+<ul>
+<li><p>内存操作</p>
+</li>
+<li><p>单线程避免不必要上下文切换</p>
+</li>
+<li><p>I&#x2F;O多路复用，非阻塞IO</p>
+</li>
+<li><p>性能瓶颈是<strong>网络延迟</strong>而不是执行速度</p>
+</li>
+</ul>
+<p>什么是I&#x2F;O多路复用模型？</p>
+<ul>
+<li><strong>用户空间和内核空间</strong></li>
+</ul>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E5%86%85%E6%A0%B8.png" alt="内核"></p>
+<ul>
+<li>阻塞IO</li>
+</ul>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E9%98%BB%E5%A1%9EIO.png" alt="阻塞IO"></p>
+<ul>
+<li>非阻塞IO<ul>
+<li>需要轮询检查 I&#x2F;O 操作是否完成，线程可以利用等待 I&#x2F;O 的时间执行其他任</li>
+</ul>
+</li>
+</ul>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E9%9D%9E%E9%98%BB%E5%A1%9EIO.png" alt="非阻塞IO"></p>
+<ul>
+<li><p>IO多路复用（单线程监听多个socket，哪个socket好了先进行哪个）</p>
+</li>
+<li><p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8.png" alt="IO多路复用"></p>
+<ul>
+<li>监听socket的方式：select和poll提醒用户进程就绪，但序需遍历找到该socket。epoll会将就绪的Socket直接写入用户空间</li>
+</ul>
+</li>
+<li><p>Redis网络模型</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B.png" alt="网络模型"></p>
+</li>
+</ul>
 </div></article></div><div data-thread-key="2025/01/07/面试篇-Redis/" data-title="面试篇-Redis" data-url="https://senwh.github.io/2025/01/07/%E9%9D%A2%E8%AF%95%E7%AF%87-Redis/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
 (function() {
     var ds = document.createElement('script');
@@ -50,4 +220,4 @@ var disqus_url = 'https://senwh.github.io/2025/01/07/面试篇-Redis/';
     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/01/06/%E4%BA%8C%E5%8F%89%E6%A0%91/" class="next">NEXT</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/02/11/%E5%9B%9E%E6%BA%AF/" class="prev">PREV</a><a href="/2025/01/06/%E4%BA%8C%E5%8F%89%E6%A0%91/" class="next">NEXT</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

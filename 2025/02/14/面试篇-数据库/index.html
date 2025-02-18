@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 面试篇-数据库 · 部落格</title><meta name="description" content="面试篇-数据库 - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">面试篇-数据库</h1><div class="post-info">Feb 14, 2025</div><div class="post-content"><h1 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h1><h2 id="定位慢查询"><a href="#定位慢查询" class="headerlink" title="定位慢查询"></a>定位慢查询</h2><p><strong>慢查询定义：</strong>执行时间超过一定阈值（可配置）的 SQL 查询</p>
+<p><strong>如何定位？</strong></p>
+<ul>
+<li>开源工具<ul>
+<li>调式工具 Arthas</li>
+<li>运维工具：Prometheus、Skywalking</li>
+</ul>
+</li>
+<li>Mysql自带慢日志<ul>
+<li>开始开关&#x2F;设置时间阈值（超过该阈值判定为慢日志）</li>
+</ul>
+</li>
+</ul>
+<h2 id="SQL执行计划"><a href="#SQL执行计划" class="headerlink" title="SQL执行计划"></a>SQL执行计划</h2><p><strong>如何优化慢查询？</strong></p>
+<ul>
+<li>EXPLAIN&#x2F;DESC命令获取查询命令执行信息<ul>
+<li>key判断是否命中索引</li>
+<li>Extra给出是否回表查询</li>
+<li>type<img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/msql-1.png" alt="msql-1"></li>
+</ul>
+</li>
+</ul>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><p>定义：一种排好序的<strong>数据结构</strong>-&gt;可以帮mysql高效获取数据（类似一张表，不是一个值）</p>
+<p><strong>为什么需要？</strong></p>
+<ul>
+<li>查询磁盘慢在寻址，索引绑定磁盘地址后，检索索引即可省去寻址过程</li>
+</ul>
+<p>其数据结构：k-V，k为值，V为磁盘地址</p>
+<ul>
+<li><p>二叉树：最差情况O（n）</p>
+</li>
+<li><p>红黑树</p>
+<ul>
+<li>比AVL平衡条件更宽松（适合频繁的插入删除，需要的旋转次数较少）</li>
+<li>百万级数目-&gt;树的高度会很高</li>
+</ul>
+</li>
+<li><p>Hash表</p>
+<ul>
+<li>索引key做Hash计算，得到对应data的磁盘地址（速度快）</li>
+<li>仅满足”&#x3D;“，<strong>不支持范围查询</strong></li>
+<li>hash冲突</li>
+</ul>
+</li>
+<li><p>B Tree</p>
+<ul>
+<li>叶节点具有相同深度，指针为空，数据索引递增（磁盘文件地址和索引保存在一起）</li>
+</ul>
+</li>
+<li><p>B+Tree（mysql底层存储数据结构）</p>
+<ul>
+<li>非叶子节点不存data（磁盘地址）</li>
+<li>叶子节点包含所有索引，节点间用指针连接</li>
+<li>便于<strong>区间查询</strong>（叶子双向链表）</li>
+</ul>
+</li>
+</ul>
+<p>Mysql默认一个节点（16KB），有多个组构成（8B-索引+6B-下一级指针）&#x3D;约1170组</p>
+<p><strong>叶子节点（8B+约1KB（data））：key-value的形式</strong></p>
+<p><strong>查询过程</strong>：将结点加载进内存（相比磁盘可以忽略不计）-折半查找，寻找下一层</p>
+<p><strong>存储引擎</strong></p>
+<p><strong>MyISAM</strong></p>
+<ul>
+<li>磁盘含三个文件，分别存：文件结构、data、索引</li>
+<li>匹配索引到data中查找</li>
+<li>非聚集索引（data，索引放不同文件）</li>
+<li>第一次IO访问索引（叶子的data部分放的是主键值）（二级索引-例：用name去查主键），第二次IO访问data（<strong>回表</strong>），速度慢</li>
+</ul>
+<p><strong>InnoDB</strong></p>
+<ul>
+<li>磁盘含两个文件，分别存：文件结构、data+索引</li>
+<li>聚集索引（data+索引放一个文件）</li>
+<li>速度快，牺牲空间</li>
+</ul>
+<p><strong>为什么建议InnoDB必须建主键？</strong>&#x2F;为什么用自增整型</p>
+<ul>
+<li><p><strong>如果没有主键，mysql会找一不含重复元素的列作为主键&#x2F;自己生成主键（牺牲数据库资源），ROWID</strong></p>
+</li>
+<li><p>整型比大小更快（查找效率更高）</p>
+</li>
+<li><p>如果不用自增， 新节点插入中间节点容易产生分裂，重建B+树较麻烦</p>
+</li>
+</ul>
+<p><strong>联合索引</strong>（索引主键是几个key的组合(a,b,c)）</p>
+<ul>
+<li>最左前缀原则<ul>
+<li>底层存储结构（如果条件没name，需要全表查找age，age只在固定name时节点才有序）<img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/msql-2.png" alt="msql-2"></li>
+</ul>
+</li>
+</ul>
+<p><strong>覆盖索引</strong></p>
+<p><strong>定义：查询使用了索引，并且需要返回的列，在索引中能全部找到</strong></p>
+<p><strong>主键索引</strong>：如果字段 <code>A</code> 是主键，那么 <code>A</code> 的 B+ 树索引是主键索引，主键索引的叶子节点存储的是主键值和数据行的聚集地址（数据行的实际存储位置）。主键索引是存储数据行的唯一标识</p>
+<p><strong>二级索引</strong>：二级索引的叶子节点存储的是索引字段的值和主键值的组合。如果查的值刚好是索引字段的值，就不用回表了-&gt;所谓覆盖索引</p>
+<p>例：如果查找只需要返回Arm和id，则该二级索引已经够了，不需要回表</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/msql-3.png" alt="msql-3"></p>
+<ul>
+<li>避免使用select* ,因为除了条件是id时是聚集索引，其他都要回表（非覆盖）</li>
+<li>解决MYSQL超大分页（limit分页越往后效率越低，数据库不能知道第n行的位置，需要一行行扫描）<ul>
+<li>B+树会从第一个叶节点一个个往下找</li>
+<li>如果没有覆盖索引，每一个节点需要回表一次</li>
+<li>SELECT *<br>FROM tb_sku t,<br> (SELECT id FROM tb_sku ORDER BY id LIMIT 9000000, 10) a<br>WHERE t.id &#x3D; a.id; 该覆盖查询-&gt;获得的id不需要回表+子查询只需回表10条，相比较前者性能得到优化</li>
+</ul>
+</li>
+</ul>
+<p><strong>索引创建原则</strong></p>
+<ul>
+<li>数据量大，查询频繁的表建立索引（单表超10w数据）</li>
+<li>针对常做为where,order by, group by操作的字段建立索引</li>
+<li>使用区分度高的列做索引</li>
+<li>针对字符串字段做索引时，由于其很长，可只用其前缀</li>
+<li>尽量使用联合索引，很多时候可以覆盖索引（避免回表）</li>
+</ul>
+<p><strong>什么时候索引失效？</strong></p>
+<ul>
+<li>违反最左前缀法则</li>
+<li><strong>查询范围右边的列不能使用索引</strong></li>
+<li>在索引列上运算</li>
+<li>字符串不加单引号</li>
+<li>%开头的模糊索引</li>
+</ul>
+<p><strong>谈谈对sql的优化经验</strong></p>
+<ul>
+<li>表设计</li>
+<li>索引优化</li>
+<li>sql语句设计</li>
+<li>主从复制、读写分离</li>
+<li>分库分表</li>
+</ul>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><p>定义：一组操作的集合，把所有操作一起提交&#x2F;撤销，同时成功&#x2F;失败</p>
+<h2 id="特性：ACID"><a href="#特性：ACID" class="headerlink" title="特性：ACID"></a>特性：ACID</h2><ul>
+<li><p>原子性（Atomicity）最小操作单位</p>
+<ul>
+<li>实现方式<ul>
+<li>日志记录：记录事物操作，用于回滚</li>
+<li>事务回滚：两个阶段-回滚未完成事物，前滚已完成事物</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>一致性（Consistency）事物完成时<strong>数据一致</strong></p>
+<ul>
+<li>数据完整性约束<ul>
+<li><strong>实体完整性</strong>：主键约束要求表中的每行记录都有一个唯一的标识符，确保数据的唯一性和可识别性。</li>
+<li><strong>参照完整性</strong>：外键约束确保两个表之间的关系是有效的，例如，子表中的外键值必须存在于主表的主键值中。</li>
+<li><strong>域完整性</strong>：数据类型和取值范围约束确保数据的格式和内容符合预定的规则，例如，年龄字段必须是正整数且小于某个上限。</li>
+</ul>
+</li>
+<li>事务逻辑验证：人为规则：每个部门只能有一个经理</li>
+<li>并发控制（隔离性级别）</li>
+<li>事物回滚&#x2F;恢复</li>
+</ul>
+</li>
+<li><p>隔离性（Isolation）事物不受外部并发操作影响</p>
+<ul>
+<li><p>实现方式</p>
+<ul>
+<li><p>锁机制：共享锁（读锁）和排他锁（写锁）</p>
+</li>
+<li><p>事务隔离级别（隔离性 低-&gt;高）：</p>
+<ul>
+<li>读未提交（Read Uncommitted）（脏读、不可重复读和幻读）</li>
+<li>读已提交（Read Committed）（不可重复读和幻读）</li>
+<li>可重复读（Repeatable Read）（保证对<strong>同一数据</strong>的多次读取结果是一致的，但没有防止其他事务插入新的数据）（幻读）<strong>（mysql默认模式）</strong> <strong>标准SQL中RR允许幻读，但MySQL的InnoDB通过MVCC+间隙锁在RR级别避免了幻读（这是MySQL的特性，非SQL标准要求）</strong></li>
+<li>串行化（Serializable）（性能下降）</li>
+</ul>
+</li>
+<li><p><strong>多版本控制（MVCC）</strong></p>
+</li>
+</ul>
+</li>
+<li><p>事务并发执行时的隔离性问题（下述的前提是<strong>在同一事务内</strong>）</p>
+<ul>
+<li>脏读：一个事务读取了另一个未提交事务写入的数据</li>
+<li>不可重复读：读取到已提交的数据，但数据已被修改</li>
+<li>幻读：读取到已提交的数据，但数据集的行数发生了变化（新增或删除）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>持久性（Durability）提交&#x2F;回滚，对数据改变是永久的</p>
+<ul>
+<li>实现方式<ul>
+<li>存储子系统（磁盘）</li>
+<li>日志</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="undo（回滚）-log-和redo（恢复）-log"><a href="#undo（回滚）-log-和redo（恢复）-log" class="headerlink" title="undo（回滚） log 和redo（恢复） log"></a>undo（回滚） log 和redo（恢复） log</h2><p>缓冲池：主存区域，以一定频率刷新到磁盘</p>
+<p>数据页：InnoDB磁盘管理最小单位，默认16KB（行数据）</p>
+<p><strong>redo</strong>：<strong>记录物理页的变化</strong>，<strong>实现持久性</strong> 包括 redo log buffer(缓存) -&gt;redo log file（磁盘）-&gt;定期刷新</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/redo.png" alt="redo"></p>
+<p><strong>作用：数据同步到磁盘出现问题时，根据该日志可以恢复</strong></p>
+<p><strong>undo log：逻辑日志（delete记录为insert）（关注未提交事物的回滚），实现事务一致性和原子性</strong></p>
+<p><strong>事物处理过程：</strong></p>
+<ul>
+<li><strong>事务开始</strong>：当一个事务开始时，数据库系统会为其分配一个唯一的事务标识符，并开始记录该事务的 Redo Log 和 Undo Log。</li>
+<li><strong>数据修改</strong>：在事务执行过程中，每当对数据库进行修改操作时，数据库系统会首先将相应的 Redo Log 写入缓冲区，然后记录 Undo Log。</li>
+<li><strong>事务提交</strong>：在事务提交之前，数据库系统会确保所有的 Redo Log <strong>都已被写入磁盘</strong>，然后更<strong>新事务的状态为已提交</strong>。此时，数据修改的结果才会被永久保存。</li>
+<li><strong>事务回滚</strong>：如果事务需要回滚，数据库系统会根据 Undo Log 中的记录，撤销该事务对数据库所做的所有修改</li>
+</ul>
+<p><strong>恢复过程：</strong></p>
+<ul>
+<li><strong>检查点</strong>：数据库系统<strong>定期创建检查点</strong>，记录当前数据库的状态和已提交事务的信息。</li>
+<li><strong>数据库崩溃</strong>：当数据库系统崩溃时，所有未完成的事务都会被挂起，而 Redo Log 和 Undo Log 仍然保存在磁盘上。</li>
+<li><strong>恢复</strong>：<ul>
+<li><strong>重做阶段</strong>：数据库系统首先重放 Redo Log 中的所有记录，将数据库<strong>恢复到检查点时的状态</strong>，并应用所有已提交事务的修改。</li>
+<li><strong>回滚阶段</strong>：然后，数据库系统根据 Undo Log，<strong>撤销所有未提交事务的修改</strong>，确保数据库的一致性。</li>
+</ul>
+</li>
+</ul>
+<h2 id="MVCC-multi-verison-concurrence-control"><a href="#MVCC-multi-verison-concurrence-control" class="headerlink" title="MVCC (multi-verison concurrence control)"></a>MVCC (multi-verison concurrence control)</h2><p>定义：一种数据库并发控制机制，通过为<strong>每行数据维护多个版本</strong>来实现读写操作的并行执行。它允许读操作不被写操作阻塞，写操作也不被读操作阻塞，从而提高了数据库的并发性能</p>
+<p><strong>实现方式</strong></p>
+<ul>
+<li>隐藏字段：每行数据包含隐藏的元数据（创建该版本的事务ID，指向该版本的Undo Log的指针，行ID用于唯一标识一行数据）</li>
+<li>Undo Log版本链：每次修改对应一个版本 追加存储在Undo Log<img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/mvcc-1.png" alt="mvcc-1"></li>
+<li><strong>Read View</strong>：包含（当前<strong>活跃</strong>(未提交)事务的ID集合，当前活跃事务的最大ID&#x2F;最小ID，创建该Read View的事务ID）<img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/mvcc-2.png" alt="mvcc-2"></li>
+</ul>
+<p>即定义了一组规则（随着隔离级别改动-RC-RR），控制事务出现避免并发问题。根据该规则，以RC为例，第一个RV读的是事务2的结果（它已提交），第二个读的是（事务3）</p>
+<p><strong>RC在每一次执行快照生成读视图</strong></p>
+<p><strong>RR在只在事务第一次执行生成都视图</strong></p>
+<p><strong>快照读：</strong>并不直接读取数据库中的最新数据，而是读取数据的一个快照版本。这个快照版本是事务开始时数据库的状态。<strong>允许读操作不被写操作阻塞</strong></p>
+<p><strong>总结：</strong></p>
+<ul>
+<li>事务按照<strong>现实业务根据自身需求选择适合的隔离级别</strong>，之所以需要有隔离级别是为了提升数据库的性能(不然所有事务都用串行化就好了),，另外越高的隔离级别会导致更多锁竞争和回滚。</li>
+<li>不同的隔离级别方式有其实现方法，其中MVCC支持RC和RR。因为不同的隔离级别又对应不同的并发问题，开发者只要考虑该业务是否接收这样的并发问题即可确定设置的隔离级别。例：在RR中用户读的不是最新的版本信息，但用户的需求并不是要最新的，而是要解决脏读和不可重复读的问题，此时用RR没问题。快照隔离</li>
+<li>在RR级别下：<strong>读操作</strong>：看到的是事务开始时的快照版本。<strong>写操作</strong>：仍然会看到最新提交的数据（通过当前读）</li>
+</ul>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="主从同步"><a href="#主从同步" class="headerlink" title="主从同步"></a>主从同步</h2><p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/syn.png" alt="syn"></p>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><p><strong>时机：</strong></p>
+<ul>
+<li>单表数据量超1000w</li>
+<li>上述优化解决不了性能问题</li>
+<li>IO瓶颈&#x2F;CPU瓶颈</li>
+</ul>
+<p><strong>拆分类型：</strong></p>
+<ul>
+<li>垂直分库：根据业务将不同表拆分到不同库</li>
+<li>垂直分表：根据字段属性将不同字段拆分到不同表</li>
+<li>水平分库：一个库数据拆分到多个库（物理地拆分）<ul>
+<li>寻库需路由</li>
+</ul>
+</li>
+<li>水平分表：一个表数据拆分到多个表</li>
+</ul>
+<p><strong>产生问题</strong></p>
+<ul>
+<li>分布式事务一致性</li>
+<li>跨节点关联查询</li>
+<li>跨节点分页、排序函数</li>
+<li>主键避重</li>
+</ul>
+<p><strong>解决方案</strong>-&gt;中间键</p>
+<ul>
+<li>sharding-sphere</li>
+<li>mycat</li>
+</ul>
+</div></article></div><div data-thread-key="2025/02/14/面试篇-数据库/" data-title="面试篇-数据库" data-url="https://senwh.github.io/2025/02/14/%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%95%B0%E6%8D%AE%E5%BA%93/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><script>var disqus_shortname = 'Sen';
+var disqus_identifier = '2025/02/14/面试篇-数据库/';
+var disqus_title = '面试篇-数据库';
+var disqus_url = 'https://senwh.github.io/2025/02/14/面试篇-数据库/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/02/17/%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%A1%86%E6%9E%B6/" class="prev">PREV</a><a href="/2025/02/12/%E9%A1%B9%E7%9B%AE%E8%BF%9B%E9%98%B6-%E3%80%8Amall%E9%A1%B9%E7%9B%AE%E3%80%8B/" class="next">NEXT</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

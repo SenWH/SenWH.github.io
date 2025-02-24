@@ -1,0 +1,199 @@
+<!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 电商项目-演进文档 · 部落格</title><meta name="description" content="电商项目-演进文档 - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">电商项目-演进文档</h1><div class="post-info">Feb 18, 2025</div><div class="post-content"><h1 id="高并发交易系统架构优化实践演进文档"><a href="#高并发交易系统架构优化实践演进文档" class="headerlink" title="高并发交易系统架构优化实践演进文档"></a>高并发交易系统架构优化实践演进文档</h1><h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><table>
+<thead>
+<tr>
+<th>版本号</th>
+<th>发布日期</th>
+<th>主要变更</th>
+<th>负责人</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v1.0.0</td>
+<td>2025-1-10</td>
+<td>基础功能完成（JWT）</td>
+<td>L同学</td>
+</tr>
+<tr>
+<td>v1.1.0</td>
+<td>2025-02-22</td>
+<td>缓存优化</td>
+<td>L同学</td>
+</tr>
+<tr>
+<td>v1.1.1</td>
+<td>2025-02-24</td>
+<td>分布式锁控制并发（库存扣减）</td>
+<td>L同学</td>
+</tr>
+<tr>
+<td>v1.1.2</td>
+<td>2025-02-24</td>
+<td>高频计数器</td>
+<td></td>
+</tr>
+<tr>
+<td>v1.2.0</td>
+<td>2025-02-26</td>
+<td>订单超时自动取消（延迟队列）</td>
+<td></td>
+</tr>
+<tr>
+<td>v1.2.1</td>
+<td>2025-02-27</td>
+<td>异步通知和日志（MQ，           低库存预警通过邮件、短信通知商家。）</td>
+<td></td>
+</tr>
+<tr>
+<td>v1.2.2</td>
+<td>2025-02-29</td>
+<td>秒杀流量削峰</td>
+<td></td>
+</tr>
+<tr>
+<td>v1.3.0</td>
+<td>2025-03-01</td>
+<td>数据一致性保障</td>
+<td></td>
+</tr>
+<tr>
+<td>v1.3.1</td>
+<td>2025-03-03</td>
+<td>监控和压测</td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="版本详情"><a href="#版本详情" class="headerlink" title="版本详情"></a>版本详情</h2><h3 id="v1-1-0-性能优化专项"><a href="#v1-1-0-性能优化专项" class="headerlink" title="v1.1.0 - 性能优化专项"></a>v1.1.0 - 性能优化专项</h3><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p><strong>测试目标</strong>：</p>
+<ul>
+<li><p>登录接口（模拟高并发用户）</p>
+</li>
+<li><p>订单创建接口（核心业务）</p>
+</li>
+<li><p>商品查询接口（高频读操作）</p>
+</li>
+<li><p>问题发现：JMeter压测订单创建接口，100并发下TPS仅85，错误率12%</p>
+</li>
+<li><p>核心痛点：</p>
+<ol>
+<li><p>数据库连接池频繁耗尽</p>
+</li>
+<li><p>商品查询接口响应时间波动大（300ms~1200ms）</p>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="主要改动"><a href="#主要改动" class="headerlink" title="主要改动"></a>主要改动</h4><p><strong>1. 数据库优化</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 新增联合索引（原无索引）</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> order_detail </span><br><span class="line"><span class="keyword">ADD</span> INDEX idx_order_product (order_id, product_id);</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 连接池调优</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># application.yml</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">hikari:</span></span><br><span class="line">      <span class="attr">maximum-pool-size:</span> <span class="number">20</span> <span class="string">→</span> <span class="number">50</span></span><br><span class="line">      <span class="attr">connection-timeout:</span> <span class="number">3000</span> <span class="string">→</span> <span class="number">10000</span></span><br><span class="line">      <span class="attr">idle-timeout:</span> <span class="number">600000</span> <span class="string">→</span> <span class="number">300000</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 热点数据缓存</strong></p>
+<ul>
+<li><p>Redis</p>
+</li>
+<li><p>序列化优化</p>
+<ul>
+<li>默认-&gt;JSON</li>
+</ul>
+</li>
+<li><p>防穿透（空间换时间）</p>
+<ul>
+<li>缓存空数据</li>
+<li><strong>布隆过滤器</strong></li>
+</ul>
+</li>
+<li><p>防雪崩</p>
+<ul>
+<li>设置随机过期时间</li>
+</ul>
+</li>
+</ul>
+<h4 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h4><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>优化前</th>
+<th>优化后</th>
+<th>测试条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>订单创建TPS</td>
+<td>85</td>
+<td>220</td>
+<td>100并发，持续30s</td>
+</tr>
+<tr>
+<td>商品查询P99</td>
+<td>1200ms</td>
+<td>350ms</td>
+<td>200并发，持续1min</td>
+</tr>
+<tr>
+<td>数据库连接等待</td>
+<td>78%</td>
+<td>12%</td>
+<td>峰值压力期间</td>
+</tr>
+</tbody></table>
+<hr>
+<blockquote>
+<p>通过引入Redis缓存，我们将高频查询的响应时间从200ms降低到5ms，QPS从500提升到3000，数据库CPU负载下降83%。同时设计了空值缓存和随机过期策略，缓存命中率稳定在98%以上，未出现缓存雪崩问题。</p>
+</blockquote>
+<h3 id="v1-2-0-高可用改造"><a href="#v1-2-0-高可用改造" class="headerlink" title="v1.2.0 - 高可用改造"></a>v1.2.0 - 高可用改造</h3><h4 id="背景说明"><a href="#背景说明" class="headerlink" title="背景说明"></a>背景说明</h4><ul>
+<li>线上问题：促销活动期间出现订单重复创建</li>
+<li>监控发现：优惠券核销接口CPU使用率持续&gt;90%</li>
+</ul>
+<h4 id="技术方案"><a href="#技术方案" class="headerlink" title="技术方案"></a>技术方案</h4><p><strong>1. 幂等性保障</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java复制代码<span class="comment">// 使用Redis原子操作</span></span><br><span class="line"><span class="type">Boolean</span> <span class="variable">result</span> <span class="operator">=</span> redisTemplate.opsForValue()</span><br><span class="line">    .setIfAbsent(<span class="string">&quot;order:unique:&quot;</span> + orderNo, <span class="string">&quot;1&quot;</span>, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line"><span class="keyword">if</span> (!Boolean.TRUE.equals(result)) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BusinessException</span>(<span class="string">&quot;重复订单&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 本地限流器</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">java复制代码<span class="comment">// 基于Guava的RateLimiter</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">RateLimiter</span> <span class="variable">rateLimiter</span> <span class="operator">=</span> RateLimiter.create(<span class="number">500.0</span>); <span class="comment">// 500请求/秒</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/coupon/use&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Response <span class="title function_">useCoupon</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!rateLimiter.tryAcquire()) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BusinessException</span>(<span class="string">&quot;系统繁忙，请稍后重试&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="效果验证"><a href="#效果验证" class="headerlink" title="效果验证"></a>效果验证</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">plantuml复制代码@startuml</span><br><span class="line">left to right direction</span><br><span class="line">| 压测阶段 |</span><br><span class="line">:50并发;</span><br><span class="line">|#AntiqueWhite| 优化前 |</span><br><span class="line">:错误率: 15%;</span><br><span class="line">|#LightGreen| 优化后 |</span><br><span class="line">:错误率: 0.3%;</span><br><span class="line">@enduml</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="技术债务与规划"><a href="#技术债务与规划" class="headerlink" title="技术债务与规划"></a>技术债务与规划</h2><h3 id="待解决问题"><a href="#待解决问题" class="headerlink" title="待解决问题"></a>待解决问题</h3><ol>
+<li>订单历史数据查询缓慢（当前方案：直接查MySQL）</li>
+<li>短信服务偶发超时（超时率0.7%）</li>
+</ol>
+<h3 id="后续计划"><a href="#后续计划" class="headerlink" title="后续计划"></a>后续计划</h3><ul>
+<li>v1.3.0（2024-03-20）：接入Elasticsearch优化查询</li>
+<li>v1.4.0（2024-04-01）：消息队列解耦短信服务</li>
+</ul>
+<hr>
+<h2 id="附录：性能测试报告"><a href="#附录：性能测试报告" class="headerlink" title="附录：性能测试报告"></a>附录：性能测试报告</h2><h3 id="订单创建接口压测对比"><a href="#订单创建接口压测对比" class="headerlink" title="订单创建接口压测对比"></a>订单创建接口压测对比</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">csv复制代码并发数, 优化前TPS, 优化后TPS, 错误率变化</span><br><span class="line">50, 120, 280, 8% → 0%</span><br><span class="line">100, 85, 220, 12% → 0.5%</span><br><span class="line">200, 32, 180, 28% → 2.1%</span><br></pre></td></tr></table></figure>
+
+<h3 id="内存分析截图"><a href="#内存分析截图" class="headerlink" title="内存分析截图"></a>内存分析截图</h3><p><img src="https://cloud.siliconflow.cn/playground/jvm_heap.png" alt="JVM内存优化对比"></p>
+<h3 id="文档使用建议："><a href="#文档使用建议：" class="headerlink" title="文档使用建议："></a>文档使用建议：</h3><ol>
+<li><strong>版本粒度</strong>：每个版本聚焦一个主题（如性能优化&#x2F;高可用改造） </li>
+<li><strong>问题驱动</strong>：先描述发现的问题，再给出解决方案 </li>
+<li><strong>数据佐证</strong>：关键优化点必须附带压测数据对比 </li>
+<li><strong>可视化呈现</strong>：适当使用：   - 表格对比（优化前后数据）   - PlantUML流程图（技术方案示意图）   - 架构图（使用draw.io或Excalidraw绘制）</li>
+</ol>
+<h3 id="面试讲述技巧："><a href="#面试讲述技巧：" class="headerlink" title="面试讲述技巧："></a>面试讲述技巧：</h3><ol>
+<li>按「问题→方案→结果」三段式描述每个优化点 2. 准备1-2个详细的技术决策案例：     <strong>案例：缓存选型决策</strong>   - 候选方案：     1. Redis单缓存（成本低，但网络延迟影响性能）     </li>
+<li>Caffeine本地缓存（速度快，但集群一致性难保证）     </li>
+<li>多级缓存方案（本地缓存+Redis）   - 决策依据：     - 业务特点：商品信息变更频率低（每天&lt;10次）     - 最终选择：Caffeine本地缓存 + 广播刷新   - 实现效果：商品查询RT降低82%</li>
+</ol>
+</div></article></div><div data-thread-key="2025/02/18/电商项目-演进文档/" data-title="电商项目-演进文档" data-url="https://senwh.github.io/2025/02/18/%E7%94%B5%E5%95%86%E9%A1%B9%E7%9B%AE-%E6%BC%94%E8%BF%9B%E6%96%87%E6%A1%A3/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><script>var disqus_shortname = 'Sen';
+var disqus_identifier = '2025/02/18/电商项目-演进文档/';
+var disqus_title = '电商项目-演进文档';
+var disqus_url = 'https://senwh.github.io/2025/02/18/电商项目-演进文档/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/02/22/%E8%B4%AA%E5%BF%83/" class="prev">上一篇</a><a href="/2025/02/17/%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%A1%86%E6%9E%B6/" class="next">下一篇</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

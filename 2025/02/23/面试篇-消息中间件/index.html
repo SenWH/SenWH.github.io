@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="zn-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 面试篇-消息中间件 · 部落格</title><meta name="description" content="面试篇-消息中间件 - Sen"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/nav.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="https://senwh.github.io/atom.xml" title="部落格"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">部落格</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/SenWH" target="_blank"><img src="/images/github.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">面试篇-消息中间件</h1><div class="post-info">Feb 23, 2025</div><div class="post-content"><h1 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h1><p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6/mq.png" alt="{021133AB-663B-41DE-9F76-0902095DF914}"></p>
+<h2 id="如何保证消息不丢失"><a href="#如何保证消息不丢失" class="headerlink" title="如何保证消息不丢失"></a>如何保证消息不丢失</h2><p><strong>问题：</strong></p>
+<ul>
+<li>生产者宕机，消息未达交换机&#x2F;队列</li>
+<li>mq宕机，队列消息队列</li>
+<li>消费者宕机</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<ul>
+<li>确认机制<ul>
+<li>生产者确认机制：生产者发送消息后，会收到 RabbitMQ 的确认消息，失败重发</li>
+<li>消费者确认机制：mq收到消费者ack才删除消息（手动-自己调api、自动-无异常则ack，none-立刻删除）</li>
+</ul>
+</li>
+<li>消息持久化(mq默认内存存储消息)<ul>
+<li>交换机&#x2F;队列持久化：mq重启保留队列</li>
+<li>消息持久化：写入磁盘</li>
+</ul>
+</li>
+</ul>
+<p><strong>失败如何处理：</strong></p>
+<ul>
+<li>回调方法重发</li>
+<li>记录日志</li>
+<li>记录到数据库后重发，发完后删除</li>
+<li>消费者处理异常则让mq重试，达到最大重试次数后放入异常交换机转人工处理</li>
+</ul>
+<h2 id="重复消费"><a href="#重复消费" class="headerlink" title="重复消费"></a>重复消费</h2><p><strong>定义：消费者的ack丢失，导致mq重复发消息，消费者重复消费</strong></p>
+<p><strong>解决方案：</strong></p>
+<ul>
+<li>标识消息id（业务唯一标识）</li>
+<li>幂等方案：锁（性能下降）-是指在分布式系统中，同一个操作无论执行多少次，结果都是一致的。</li>
+</ul>
+<h2 id="死信交换机"><a href="#死信交换机" class="headerlink" title="死信交换机"></a>死信交换机</h2><p><strong>延迟队列</strong>：进入队列的消息会被延迟消费，<strong>实现方式</strong>：死信交换机+TTL</p>
+<p><strong>场景：</strong>超时订单（<strong>超时，需要进行取消订单、释放库存等操作</strong>）、限时优惠、定时发布（支付剩余时间…）</p>
+<p><strong>死信（dead letter） 满足以下情况之一</strong></p>
+<ul>
+<li>当消费者使用 <code>basic.reject</code> 或 <code>basic.nack</code> 方法拒绝消息时，如果 <code>requeue</code> 参数设置为 <code>false</code></li>
+<li>消息 TTL 过期（min（队列过期时间，消息过期时间））</li>
+<li>队列满，后进消息成为死信</li>
+</ul>
+<p><strong>死信-&gt;死信交换机-&gt;消费者从死信队列中消费消息，处理超时订单</strong>，如果在延时过程中处理了订单，也要等TTL到期，让消费者处理</p>
+<h2 id="消息堆积"><a href="#消息堆积" class="headerlink" title="消息堆积"></a>消息堆积</h2><p><strong>原因：</strong>消费者消费速度&lt;生产者生产速度</p>
+<p><strong>解决方案：</strong></p>
+<ul>
+<li>增加消费者数量</li>
+<li>消费者内部使用线程池</li>
+<li>扩充队列容积<ul>
+<li>惰性队列：接收消息后存入磁盘、消费时才从磁盘取出、支持数百万消息存储</li>
+</ul>
+</li>
+</ul>
+<h2 id="高可用机制"><a href="#高可用机制" class="headerlink" title="高可用机制"></a>高可用机制</h2><p><strong>集群</strong></p>
+<ul>
+<li>标准集群：多节点，共享相同的元数据，消息在某节点找不到时，会从其他节点传过来</li>
+<li>镜像模式：主从模式，n主，每个主在别的节点中有备份。操作在主节点完成后同步-同步完成前主节点宕机（消息丢失）</li>
+<li>仲裁协议-采用Raft协议，减少丢失，保证强一致性</li>
+</ul>
+<h1 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h1><h2 id="如何保证消息不丢失-1"><a href="#如何保证消息不丢失-1" class="headerlink" title="如何保证消息不丢失"></a>如何保证消息不丢失</h2></div></article></div><div data-thread-key="2025/02/23/面试篇-消息中间件/" data-title="面试篇-消息中间件" data-url="https://senwh.github.io/2025/02/23/%E9%9D%A2%E8%AF%95%E7%AF%87-%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6/" data-author-key="1" class="ds-thread"></div><div id="disqus_thread"></div></div><script>var duoshuoQuery = {short_name:"1234"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><script>var disqus_shortname = 'Sen';
+var disqus_identifier = '2025/02/23/面试篇-消息中间件/';
+var disqus_title = '面试篇-消息中间件';
+var disqus_url = 'https://senwh.github.io/2025/02/23/面试篇-消息中间件/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//Sen.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2025/02/23/%E9%9D%A2%E8%AF%95%E7%AF%87-%E9%9B%86%E5%90%88/" class="prev">上一篇</a><a href="/2025/02/22/%E8%B4%AA%E5%BF%83/" class="next">下一篇</a></div><div class="copyright"><p>© 2024 - 2025 <a href="https://senwh.github.io">Sen</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"Sen",'auto');ga('send','pageview');</script></body></html>

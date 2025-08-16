@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        部落格
+    </title>
+    <meta name="description" content= 千里之行，始于足下 >
+    <meta name="keywords" content= Blog >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            系统设计问答
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h2 id="如何设计一个阻塞队列？"><a href="#如何设计一个阻塞队列？" class="headerlink" title="如何设计一个阻塞队列？"></a>如何设计一个阻塞队列？</h2><ul>
+<li>首先我会考虑线程安全的问题，阻塞队列的操作主要有两个，一个是push，一个task，需要保证他们在多线程情况下操作的线程安全，可以考虑使用synchronized或者ReentrantLock来实现。第二个要有阻塞和唤醒的机制，当队列为空的时候，阻塞消费者线程，使用wait()+notify 或者信号量。队列满的时候可以阻塞生产者线程。第三个可以考虑容量设置，如果设置为有界的话，考虑满之后设计拒绝策略，如果无界的话会有内存溢出风险，要做相应的应对措施。</li>
+</ul>
+<h2 id="如何设计一个线程安全的LRU？"><a href="#如何设计一个线程安全的LRU？" class="headerlink" title="如何设计一个线程安全的LRU？"></a>如何设计一个线程安全的LRU？</h2><ul>
+<li>首先最简单的方式就是给各put&#x2F;get方法上锁，通过synchronied或者RenentransLock等。如果想避免锁的开销，使用无锁的方式的话可以考虑使用乐观锁的思想去对链表中的结点操作，在处理双向链表和Map的过程中，一个是链表结点的移动需要保证前后指针引用更新的原子性，可以对结点使用AtomicReference修饰，它是基于乐观锁的思想，通过CAS的方式修改node的指针。另外在使用Map维护key和结点时这个过程也要保证并发安全，可以 直接使用ConcurrentHashMap来保证并发安全，它的底层原理是通过volatile修饰key value，保证线程对内容的可见性。另外在无哈希冲突时，使用CAS去存入值，当然如果遇到哈希冲突了通过给头节点用synchronized上锁保证并发安全。</li>
+</ul>
+<h2 id="如何设计一个Map？"><a href="#如何设计一个Map？" class="headerlink" title="如何设计一个Map？"></a>如何设计一个Map？</h2><ul>
+<li>首先我会考虑数据结构的选择，需要快速访问某个元素可以用哈希表，例如HashMap，如果对键有顺序要求可以使用红黑树例如HashTree或者LinkHashMap。另外从并发安全的角度考虑的话，可以通过锁的方式，例如synchronized，参考ConcurrentHashMap。另外，考虑性能方面的话，首先考虑扩容的开销的话，一个是预分配好初始化的大小，减少扩容次数。另外可以参考HashMap的一些扩容细节，例如在计算索引位置的时候用与运算代替取模运算，减少计算开销。另外，根据需求考虑负载因子的设计，因子越大利用率越高，当然越容易冲突。当然哈希函数的设计也很重要，使映射尽量均匀减少冲突。在冲突之后，如何解决冲突也是需要考虑的，如果是key比较稀疏的，可以参考ThreadLocal处理冲突的设计，使用开发地址法，不需要额外创建结点的开销。对应key比较密集的，可以参考HashMap使用拉链法，用空间换时间。</li>
+</ul>
+<h2 id="如何设计一个注册中心？"><a href="#如何设计一个注册中心？" class="headerlink" title="如何设计一个注册中心？"></a>如何设计一个注册中心？</h2><ul>
+<li>首先其需要提供服务注册和服务发现的功能，也就是说将服务提供者将自己的地址和服务注册到服务中心，客户端可以根据服务名称获得服务端的IP地址。可以通过持久性数据库、缓存、本地内存来实现。其次，还需要健康检查的功能，可以参考TCP，Netty，websocket的心跳机制，使用定期ping来保证与客户端实例互通，或者让客户端在访问服务端的实例失败时告诉nacos，及时发现损坏的节点。第三个点在高并发请求时，需要负载均衡来分流，可以用一些算法，例如轮询、随机、按最小连接数等。当然，还要考虑高可用的问题，也就是通过集群来实现，一旦出现集群，就要考虑一致性的问题，可以参考nacos，使用raft协议。</li>
+</ul>
+<h2 id="如何设计一个消息队列？"><a href="#如何设计一个消息队列？" class="headerlink" title="如何设计一个消息队列？"></a>如何设计一个消息队列？</h2><ul>
+<li>首先考虑模型选型，一个点对点的模型，例如RabbitMQ，这种结构简单，只要维护路由信息，但是只适用特定场景。发布订阅模型，例如RocketMQ或者kafka，支持消息被多个消费者消费，从拓展性来说大大提高，服务端只要订阅Topic，不用维护路由信息。当然随着消费者增多，保证消息都能正确被消费，或者按顺序消费也是个挑战，对于RockMQ来说，可以使用重试+ack机制保证可靠性，分布式事务保证服务消费的一致性。第二点保证高可靠，高可靠从两方法讨论，一个是持久化，另一个是集群。对于RocketMQ来说，其持久化是通过CommitLog顺序写入磁盘，索引读的方式，对比kafka同一分区顺序写，但随着分区增多，表现为随机写，相比之下，RocketMQ这种方式减少磁盘寻道时间。当然涉及到落盘，又要考虑根据业务需要权衡性能和可靠性的问题了，涉及同步异步的设置。如果是集群的话又要考虑一致性的问题，RocketMQ是用Raft协议来保证的。第三点的话，从功能特性来考虑，RocketMQ提供了延时队列，死信队列，消息过滤等功能。另外从性能优化的角度来说，对于需要高吞吐的场景，可以参考kafka的消息压缩、批量发送，零拷贝。</li>
+</ul>
+<h2 id="设计一个支持亿级用户的短视频推荐与播放系统"><a href="#设计一个支持亿级用户的短视频推荐与播放系统" class="headerlink" title="设计一个支持亿级用户的短视频推荐与播放系统"></a>设计一个支持亿级用户的短视频推荐与播放系统</h2><h2 id="设计一个海量短视频文件存储系统"><a href="#设计一个海量短视频文件存储系统" class="headerlink" title="设计一个海量短视频文件存储系统"></a>设计一个海量短视频文件存储系统</h2><h2 id="设计一个支持瞬时10万QPS的秒杀系统-12306"><a href="#设计一个支持瞬时10万QPS的秒杀系统-12306" class="headerlink" title="设计一个支持瞬时10万QPS的秒杀系统(12306)"></a>设计一个支持瞬时10万QPS的秒杀系统(12306)</h2><h2 id="实现一个feed流系统"><a href="#实现一个feed流系统" class="headerlink" title="实现一个feed流系统"></a>实现一个feed流系统</h2><ul>
+<li>首先feed流是指用户关注的多个对象发布内容，按时间或热度更新给用户的场景。那它其实面临着高并发、数据量大、实时性要求高的需求。整个链路其实就是客户端、网关、服务层、缓存+DB。表设计的话主要涉及到关注者、被关注者、发布内容，数据库里两个表，一个是存关注和被关注者，另外一个就是发布者及其内容的表。按热度&#x2F;更新时间查看的需求，可以将数据放到redis的zset里面。对于强实时性，可以直接通过websocket推送更新的信息，，一些热门用户可以通过将更新数据放到消息队列，push给用户，普通用户拉取，降低数据库压力。</li>
+</ul>
+<h2 id="如何设计一个线程池"><a href="#如何设计一个线程池" class="headerlink" title="如何设计一个线程池"></a>如何设计一个线程池</h2><ul>
+<li>首先线程池主要是用于减少线程创建销毁带来的性能开销，核心部分我觉得要考虑任务队列、工作线程、拒绝策略、线程关闭。首先要设立一个变量技术线程数大小，用于判断是否创建新线程。第二点任务提交和线程获取任务时需要保证并发安全，同时在无任务时需要阻塞线程，任务来时唤醒。第三点队列满了，任务怎么处理。第四点，考虑关闭线程池。</li>
+</ul>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><ul>
+<li>在订单量较大的时候，为了避免单表过大导致索引树的高度上升，进而导致IO次数的增加。可以对单表进行拆分，在拆分的时候首先考虑是分片键。首先目标是同一个用户的数据分在一个分片上，避免跨表查询，那么可以用用户id作为分片键。另外用户通常会根据订单号去查找具体订单详情，基于前面说的用用户id作为分片键，可以考虑直接接用户id参与订单id的生成，这样只要通过订单id这样一个参数就可以实现分片的索引。另外的一个分片的选择可以按订单创建进行分库分片，参考淘宝来说，以30天为界限，30天后的订单数据分到其他库中，可以用一些性能稍差的数据库来存储这种冷数据。至于分片算法的话对于分片数量变化不太频繁的情况可以直接用简单的对分片键取模，或者维护一张哈希表做映射，这样配置更灵活。对于分片数量会变动比较多的，可以使用一致性哈希。然后前面提到的其实就是所谓的水平分表。对表来说也可以按字段来分，对于订单基本信息这样频繁查看的就使用一个基本信息表来存储，对于订单详情、备注等数量量大但是访问不多的可以重新划分一个表。在并发量比较大的时候，单个数据库实例可能压力比较大，可以考虑按对库按业务拆分，例如订单库，库存库等，也可以通过按创建时间为key进行分片。当然从商家角度来说，为了方便商家查找，可以冗余一个订单库，分片键可以按地区id或者按创建时间。</li>
+</ul>
+
+    </div>
+
+    
+        <hr class="fhr">
+        <div id="vcomments"></div>
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: 食芒果冰 | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="">
+<input type="hidden" id="valine_appKey" value="">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

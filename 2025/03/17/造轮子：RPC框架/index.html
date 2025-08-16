@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        部落格
+    </title>
+    <meta name="description" content= 千里之行，始于足下 >
+    <meta name="keywords" content= Blog >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            造轮子：RPC框架
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="客户端-服务端-v1-0"><a href="#客户端-服务端-v1-0" class="headerlink" title="客户端-服务端 v1.0"></a>客户端-服务端 v1.0</h1><p><img src="/./%E9%80%A0%E8%BD%AE%E5%AD%90%EF%BC%9ARPC%E6%A1%86%E6%9E%B6/rpc_1.png" alt="image-20250317013101392"></p>
+<h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><ol>
+<li>调用服务接口（客户端无实现类）</li>
+<li>获取接口<strong>Class对象</strong>，使用动态代理<strong>为接口生成代理对象</strong></li>
+</ol>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">HelloService</span> <span class="variable">helloService</span> <span class="operator">=</span> rpcClientProxy.getProxy(HelloService.class);</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="3">
+<li>重写代理类invoke方法（在调用接口方法时，代理对象拦截请求，调用invoke方法）</li>
+</ol>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invoke(Object proxy, Method method, Object[] args)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="4">
+<li>在Invoke方法中，获取所调用的方法信息（接口名、方法名、参数信息）封装成请求信息</li>
+<li>通过Socket建立连接并通过OutputStream发送</li>
+<li>通过Socket获取InputStream返回响应</li>
+</ol>
+<h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><ol>
+<li><p>Socket监听端口，获取请求数据</p>
+</li>
+<li><p>创建线程池，处理Socket监听到的请求</p>
+</li>
+</ol>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">threadPool.execute(<span class="keyword">new</span> <span class="title class_">Task</span>(socket, helloService));</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Task</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="3">
+<li>解析请求体里的数据，根据注册映射表（通过请求的接口全限定名映射实现类），获取实现类实例</li>
+</ol>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">service</span> <span class="operator">=</span> serviceImplClass.getDeclaredConstructor().newInstance();</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="3">
+<li>获取方法信息，反射调用服务</li>
+</ol>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());</span><br><span class="line"><span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> method.invoke(service, rpcRequest.getParameters());</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="4">
+<li>通过Socket返回响应数据</li>
+</ol>
+<h1 id="客户端-服务端-v1-1"><a href="#客户端-服务端-v1-1" class="headerlink" title="客户端-服务端 v1.1"></a>客户端-服务端 v1.1</h1><h2 id="待优化问题"><a href="#待优化问题" class="headerlink" title="待优化问题"></a>待优化问题</h2><ol>
+<li>服务端用信息什么注册？</li>
+</ol>
+<ul>
+<li>现在服务端维护一个注册表，通过HashMap记录（服务全限定名，服务Class对象）。即根据收到的服务全限定名获取服务。使用户只关心接口-&gt;注册接口名作为服务名注册</li>
+</ul>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt;[] interfaces = serviceImplClass.getInterfaces();</span><br><span class="line"><span class="keyword">for</span> (Class&lt;?&gt; intf : interfaces) &#123;</span><br><span class="line"> <span class="comment">// 使用接口的规范名称作为服务名</span></span><br><span class="line"> <span class="type">String</span> <span class="variable">serviceName</span> <span class="operator">=</span> intf.getCanonicalName();</span><br><span class="line"> <span class="keyword">if</span>(serviceMap.containsKey(serviceName))&#123;</span><br><span class="line">     <span class="keyword">return</span>;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">// 将服务名称和对应的服务实现类的 Class 对象存入 map</span></span><br><span class="line"> serviceMap.put(serviceName, serviceImplClass);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="2">
+<li>若有多个RPC服务器，服务如何注册？</li>
+</ol>
+<ul>
+<li>现在所有服务使用同一个实例对象，注册方法设置为静态方法，多个RPC服务若注册则都放同一个实例，高耦合。-&gt;取消静态方法，注册表实例化对象作为参数传入RPC服务</li>
+</ul>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ServiceRegistry</span> <span class="variable">serviceRegistry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServiceRegistryImpl</span>();</span><br><span class="line">serviceRegistry.register(HelloServiceImpl.class);</span><br><span class="line"><span class="type">RpcServer</span> <span class="variable">rpcServer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RpcServer</span>(serviceRegistry);</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol start="3">
+<li>此时传输采用的是BIO的方式，如何改成性能更好的NIO？</li>
+</ol>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<ul>
+<li>使用Java nio库+jackson序列化实现NIO<ul>
+<li>如果直接转成字节数组发送，在解析时头昏脑胀-&gt;也就是说要一个字符一个字符读取切割</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>序列化登场: 对象的状态信息转换为可以存储或传输的形式（如字节序列、JSON 字符串等）的过程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">jsonRequest</span> <span class="operator">=</span> objectMapper.writeValueAsString(rpcRequest);</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>实际上：在BIO也用了序列化反序列化的过程-如果一个类实现了 <code>Serializable</code> 接口，在使用 <code>ObjectOutputStream</code>（属于 BIO 体系）时，该类的对象就能被自动序列化并且自动转换为字节流。</p>
+<ul>
+<li>使用其序列化的时候遇到问题：RpcRequest中的parameters 是Object[] 类型-&gt; JSON 序列化时，<code>Object</code> 类型的字段会被序列化为一个通用的 JSON 结构，<strong>反序列化时，Jackson 默认会将其解析<code>LinkedHashMap</code></strong>—<strong>即多态类型处理问题</strong></li>
+</ul>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">解决方案,字段前加入注解：<span class="meta">@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = &quot;@class&quot;)</span> 使用类的全限定名作为类型标识/将类型信息作为 JSON 对象的一个属性存储/指定类型信息的属性名为 <span class="meta">@class</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>收发通过channel-&gt;将通道注册到选择器中-&gt;底层 （fds描述符注册到epoll）</li>
+</ul>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 打开选择器 --创建红黑树实例</span></span><br><span class="line">selector = Selector.open(); </span><br><span class="line"><span class="comment">// 打开服务器套接字通道</span></span><br><span class="line">serverSocketChannel = ServerSocketChannel.open();</span><br><span class="line"><span class="comment">// 绑定端口</span></span><br><span class="line">serverSocketChannel.socket().bind(<span class="keyword">new</span> <span class="title class_">InetSocketAddress</span>(port));</span><br><span class="line"><span class="comment">// 设置为非阻塞模式</span></span><br><span class="line">serverSocketChannel.configureBlocking(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 注册 OP_ACCEPT 事件到选择器 描述符（FD）添加到红黑树</span></span><br><span class="line">serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>当监听到请求，遍历事件并执行（当文件描述符（如套接字）的状态发生变化（如数据可读、可写等），内核会检测到这些事件。对于epoll，内核会调用一个回调函数（如<code>ep_poll_callback</code>），将事件通知给epoll实例。这个回调函数会将事件添加到epoll的就绪队列（<code>rdllist</code>）中，用户态程序调用<code>epoll_wait</code>检查就绪队列并取出）</li>
+</ul>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">selector.select(); </span><br><span class="line"><span class="comment">// 获取所有发生的事件 返回链表集合</span></span><br><span class="line">Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys()</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<p>该版本实际上实现了一个单Reactor模型，单线程派发任务，多线程分别处理连接和执行读&#x2F;写操作</p>
+<h1 id="客户端-服务端-v1-2"><a href="#客户端-服务端-v1-2" class="headerlink" title="客户端-服务端 v1.2"></a>客户端-服务端 v1.2</h1><h2 id="待优化问题-1"><a href="#待优化问题-1" class="headerlink" title="待优化问题"></a>待优化问题</h2><ol>
+<li>NIO 有空轮询Bug：事件返回数量为0，但是应该阻塞的selector.select()不断被唤醒，导致CPU100%</li>
+</ol>
+<ul>
+<li>原因：当一个连接被突然中断，epoll会将事件集合置位，由于事件集合发生了变化，<code>Selector</code>被唤醒</li>
+</ul>
+<ol start="2">
+<li>单Reactor模型在高并发场景有性能瓶颈-&gt;多线程多Reactor模型</li>
+</ol>
+<p>用Netty网络编程框架，封装Select处理细节</p>
+<blockquote>
+<p>责任链模式，数据入站-&gt;找重写了decoder方法-&gt;链顺序移动到下一个Handler（ChannelInboundHandler）专门处理入栈数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">bootstrap = <span class="keyword">new</span> <span class="title class_">Bootstrap</span>();</span><br><span class="line">bootstrap.group(group) <span class="comment">//group 线程池从中取EventLoop （线程）执行具体任务</span></span><br><span class="line">     .channel(NioSocketChannel.class) <span class="comment">//Channel被注册 Selector 监听事件 </span></span><br><span class="line">     .handler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">         <span class="meta">@Overrid</span> <span class="comment">//当有就绪事件调用channel read方法读取数据进入责任链</span></span><br><span class="line">         <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">             ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">CustomObjectDecoder</span>());</span><br><span class="line">             ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">CustomObjectEncoder</span>(serializer));</span><br><span class="line">             ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">NettyRpcClientHandler</span>()); <span class="comment">//channelRead0 触发</span></span><br><span class="line">         &#125;</span><br><span class="line">     &#125;);</span><br><span class="line"></span><br><span class="line">ctx.fireChannelRead(processedMsg); <span class="comment">//传递给下一个入站方向的处理器</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>出站则责任链逆序（ChannelOutboundHandler）-&gt;找重写了encoder方法-&gt;出站</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ChannelFuture</span> <span class="variable">future</span> <span class="operator">=</span> ctx.writeAndFlush(RpcResponse.success(result)); <span class="comment">//将处理结果writeAndFlush 写入出站方向-传递给下一个处理器</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p><code>ChannelHandlerContext</code> 提供了 <code>ChannelHandler</code> 与 <code>ChannelPipeline</code> 以及其他组件之间的交互能力</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">channelRead0</span><span class="params">(ChannelHandlerContext ctx, RpcResponse response)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"> System.out.println(<span class="string">&quot;收到消息:&quot;</span> + response);</span><br><span class="line"> AttributeKey&lt;RpcResponse&gt; key = AttributeKey.valueOf(<span class="string">&quot;rpcResponse&quot;</span>);</span><br><span class="line"> ctx.channel().attr(key).set(response); <span class="comment">//设置响应对象名</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</blockquote>
+<p>自定义序列化器-&gt;封装协议号&#x2F;序列器类型号&#x2F;包类型&#x2F;数据长度+数据</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CustomObjectEncoder <span class="keyword">extends</span> <span class="title class_">MessageToByteEncoder</span> <span class="comment">//实现该接口，当数据离开时自动调用encode方法</span></span><br><span class="line">CustomObjectDecoder <span class="keyword">extends</span> <span class="title class_">ByteToMessageDecoder</span> <span class="comment">//实现该接口，当数据入站时自动调用decode方法</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>针对前面所提：对Object序列化时的 多态类型处理问题-&gt;除了用注解方式，还可以用强转：</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; rpcRequest.getParamTypes().length; i ++) &#123;</span><br><span class="line">    Class&lt;?&gt; clazz = rpcRequest.getParamTypes()[i];</span><br><span class="line">    <span class="keyword">if</span>(!clazz.isAssignableFrom(rpcRequest.getParameters()[i].getClass())) &#123;</span><br><span class="line">        <span class="type">byte</span>[] bytes = objectMapper.writeValueAsBytes(rpcRequest.getParameters()[i]);</span><br><span class="line">        rpcRequest.getParameters()[i] = objectMapper.readValue(bytes, clazz);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h1 id="客户端-服务中心-服务端-v2-0"><a href="#客户端-服务中心-服务端-v2-0" class="headerlink" title="客户端-服务中心-服务端 v2.0"></a>客户端-服务中心-服务端 v2.0</h1><h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><ul>
+<li>将服务中心移动到Nacos，客户端从Nacos请求服务地址，为后续实现负载均衡打基础</li>
+</ul>
+<blockquote>
+<p>接口的全限定名作为key分别注册到nacos和本地注册表</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">serviceProvider.register(serviceClass); <span class="comment">//本地注册</span></span><br><span class="line">Class&lt;?&gt;[] interfaces = serviceClass.getInterfaces();</span><br><span class="line"><span class="keyword">for</span> (Class&lt;?&gt; intf : interfaces) &#123;</span><br><span class="line"> <span class="comment">// 注册服务到注册中心</span></span><br><span class="line"> serviceRegistry.register(intf.getCanonicalName(), <span class="keyword">new</span> <span class="title class_">InetSocketAddress</span>(host, port));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">注册中心</span><br><span class="line">namingService.registerInstance(serviceName, inetSocketAddress.getHostName(), inetSocketAddress.getPort());</span><br><span class="line"></span><br><span class="line">客户端请求</span><br><span class="line">List&lt;Instance&gt; instances = namingService.getAllInstances(serviceName);</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>负载均衡（在客户端处理）</li>
+</ul>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Instance&gt; instances = namingService.getAllInstances(serviceName);</span><br><span class="line"><span class="comment">// 选择负载均衡策略，这里可以根据需要修改</span></span><br><span class="line"><span class="type">Instance</span> <span class="variable">selectedInstance</span> <span class="operator">=</span> randomLoadBalance(instances); <span class="comment">//随机/轮询</span></span><br><span class="line"><span class="comment">//假设注册中心有多个实例，在多线程情况下请求 轮询时原子类当计数器</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">AtomicInteger</span> <span class="variable">roundRobinIndex</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line"> <span class="keyword">private</span> Instance <span class="title function_">roundRobinLoadBalance</span><span class="params">(List&lt;Instance&gt; instances)</span> &#123;</span><br><span class="line">     <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> roundRobinIndex.getAndIncrement() % instances.size();</span><br><span class="line">     <span class="keyword">return</span> instances.get(index);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+</blockquote>
+
+    </div>
+
+    
+        <hr class="fhr">
+        <div id="vcomments"></div>
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: 食芒果冰 | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="">
+<input type="hidden" id="valine_appKey" value="">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

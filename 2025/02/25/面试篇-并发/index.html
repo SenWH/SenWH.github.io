@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        部落格
+    </title>
+    <meta name="description" content= 千里之行，始于足下 >
+    <meta name="keywords" content= Blog >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            面试篇-并发
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="进程和线程的区别："><a href="#进程和线程的区别：" class="headerlink" title="进程和线程的区别："></a><strong>进程和线程的区别：</strong></h2><p><strong>进程：</strong>当一个程序被运行，从磁盘加载代码至内存，开启一个进程（加载指令，管理内存，IO），系统资源分配的最小单位</p>
+<p><strong>线程：</strong>运算调度的最小单位</p>
+<ul>
+<li>进程是正在运行的实例，包含多个线程，每个线程执行不同任务</li>
+<li>不同进程使用不同内存空间，一个进程内线程共享内存空间</li>
+<li>线程上下文切换成本更低</li>
+</ul>
+<h2 id="并行和并发的区别"><a href="#并行和并发的区别" class="headerlink" title="并行和并发的区别"></a>并行和并发的区别</h2><p>并发：线程一段时间内，轮流使用CPU</p>
+<p>并行：多个线程在不同核心同时工作</p>
+<h2 id="线程的创建方式"><a href="#线程的创建方式" class="headerlink" title="线程的创建方式"></a>线程的创建方式</h2><ul>
+<li><p>继承Thread类</p>
+<ul>
+<li><p>t1 &#x3D; new Thread()  t1.start</p>
+</li>
+<li><p>单继承限制</p>
+</li>
+<li><p>Thread底层代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class Thread implements Runnable </span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>实现Runnable类，重写run方法</p>
+<ul>
+<li>new Thread(Runable对象) 对象内容run方法定义了需要执行的任务</li>
+<li>Java 不支持多继承，但一个类可以实现多个接口。通过实现 <code>Runnable</code> 接口，你可以让<strong>一个类同时继承其他类</strong>(假装继承，其实是将方法封装到接口中，实现了不同的接口从而解决不同的任务)：例: public class Worker extends Employee implements Runnable</li>
+<li>多个线程可以<strong>共享同一个 <code>Runnable</code> 实例</strong>，从而实现线程的复用</li>
+</ul>
+</li>
+<li><p>Callable 接口和 Future </p>
+<ul>
+<li><pre><code class="java">        MyCallable myCallable = new MyCallable();
+        FutureTask&lt;Integer&gt; futureTask = new FutureTask&lt;&gt;(myCallable);
+      
+        new Thread(futureTask).start(); // 启动线程
+      
+        try &#123;
+            Integer result = futureTask.get(); // 获取线程返回的结果
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 线程池</span><br><span class="line"></span><br><span class="line">  - ```java</span><br><span class="line">    ExecutorService pool = Executors.newFixedThreadPool(2); // 创建一个固定大小的线程池</span><br><span class="line">    </span><br><span class="line">            pool.submit(() -&gt; &#123;</span><br><span class="line">                System.out.println(&quot;任务1正在运行，当前线程名称：&quot; + Thread.currentThread().getName());</span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">创建方式</th>
+<th align="left">优点</th>
+<th align="left">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">继承 <code>Thread</code> 类</td>
+<td align="left">简单直接</td>
+<td align="left">单继承限制</td>
+</tr>
+<tr>
+<td align="left">实现 <code>Runnable</code> 接口</td>
+<td align="left">避免单继承限制，适合多线程复用</td>
+<td align="left">线程逻辑和线程控制分离</td>
+</tr>
+<tr>
+<td align="left">使用 <code>Callable</code> 和 <code>Future</code></td>
+<td align="left">支持返回值和异常处理</td>
+<td align="left">代码复杂度较高</td>
+</tr>
+<tr>
+<td align="left">使用线程池</td>
+<td align="left">性能优化，资源复用</td>
+<td align="left">需要管理线程池的生命周期</td>
+</tr>
+</tbody></table>
+<h2 id="runnable和callable区别？"><a href="#runnable和callable区别？" class="headerlink" title="runnable和callable区别？"></a><strong>runnable和callable区别？</strong></h2><ul>
+<li>Ruannble run方法无返回值</li>
+<li>Callable 接口call方法右返回值和Futue、FutureTask可以获取异步执行结果</li>
+<li>Callable 接口call运行抛出异常；Runnable的run方法异常只能内部消化</li>
+</ul>
+<h2 id="线程的run方法和start方法有什么不同？"><a href="#线程的run方法和start方法有什么不同？" class="headerlink" title="线程的run方法和start方法有什么不同？"></a><strong>线程的run方法和start方法有什么不同？</strong></h2><ul>
+<li>start（）:启动线程，调用run方法，只能调用一次</li>
+<li>run（）: 普通方法，任务执行代码本身，可以调用多次</li>
+</ul>
+<h2 id="线程状态及状态切换"><a href="#线程状态及状态切换" class="headerlink" title="线程状态及状态切换"></a><strong>线程状态及状态切换</strong></h2><p> <img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/status.png" alt="image-20250225135656930"></p>
+<h1 id="保证线程顺序执行"><a href="#保证线程顺序执行" class="headerlink" title="保证线程顺序执行"></a><strong>保证线程顺序执行</strong></h1><p>在B线程执行A.join()-即等待A执行完后B（WAITING）才执行</p>
+<p>notify():随机唤醒一个wait()线程</p>
+<p>notifyall()：唤醒所有wait()线程</p>
+<h2 id="wait和sleep方法的异同"><a href="#wait和sleep方法的异同" class="headerlink" title="wait和sleep方法的异同"></a><strong>wait和sleep方法的异同</strong></h2><ul>
+<li><p>方法归属不同：sleep是Thread的静态方法 ，wait（）是对象的成员方法</p>
+</li>
+<li><p>醒来时机不同：wait()需要被唤醒，wait（long）可以被唤醒也可以等</p>
+</li>
+<li><p>锁特性不同</p>
+<ul>
+<li>wait方法调用先获得wait对象锁，执行后释放对象锁</li>
+<li>sleep如果在synchronized执行，不会主动释放对象锁</li>
+</ul>
+</li>
+</ul>
+<h2 id="如何停止正在运行的线程"><a href="#如何停止正在运行的线程" class="headerlink" title="如何停止正在运行的线程"></a><strong>如何停止正在运行的线程</strong></h2><ul>
+<li>线程定义退出标志，线程内部run方法循环读标志，当外部修改标志后线程停止</li>
+<li>调用stop强行中止</li>
+<li>调用interrupt中的中断线程<ul>
+<li>打断阻塞线程抛异常</li>
+<li>打断正常线程-手动用标志位退出while循环（isinterrupted（）返回标志位）</li>
+</ul>
+</li>
+</ul>
+<h1 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h1><h2 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h2><p><code>java.lang.Object</code> 是 Java 中所有类的父类，<code>synchronized</code> 是 Java 提供的一种内置锁（Intrinsic Lock），用于实现线程同步。它的实现基于<strong>对象的监视器</strong>（Monitor）和 Java <strong>内存模型</strong>（JMM）</p>
+<p><strong>对象头：</strong>每个对象在内存中都包含一个对象头，对象头是 JVM 用于存储对象相关数据的区域。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 对象头结构</span><br><span class="line">Mark Word（对象的哈希码、 GC 分代年龄、锁标志状态） | Klass Pointer（指向对象所属的类） | value（数组的长度）</span><br></pre></td></tr></table></figure>
+
+<p>![image-20250225193531038](.&#x2F;面试篇-并发&#x2F;mark word.png)</p>
+<p><strong>Monitor</strong>：每个对象都有一个与之关联的 <code>Monitor</code>，当一个线程获取对象的锁时，实际上是获取了该对象的 <code>Monitor</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Monitor 结构</span><br><span class="line">--------------------------------</span><br><span class="line">| Owner Thread（当前持有锁的线程） | Re-entrant Count（锁被持有次数） |</span><br><span class="line">|--------------------------------|</span><br><span class="line">| Entry Set (Threads Waiting for Lock) |</span><br><span class="line">|--------------------------------|</span><br><span class="line">| Wait Set (Threads Waiting via wait()) |</span><br><span class="line">--------------------------------</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/lock-1.png" alt="image-20250225193301652"></p>
+<p><strong>锁的升级和优化</strong></p>
+<p><strong>锁的状态</strong>–JVM会根据下述场景，将锁升级，以平衡性能开销</p>
+<ul>
+<li><p>无锁</p>
+</li>
+<li><p>偏向锁：偏向第一个获取锁的线程，记录线程 ID-不用再回核心态&#x2F;如果其他线程尝试获取锁，偏向锁被撤销，升级为轻量级。–JDK1.6</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/lock-3.png" alt="image-20250225195117203"></p>
+</li>
+<li><p>轻量级锁：不偏向 +CAS操作&#x2F;如果多次 CAS 失败(如果在该线程读取变量值之后、执行 CAS 操作之前，其他线程修改了变量的值，那么 CAS 操作会失败)，锁升级为重量级锁 –JDK1.6 <strong>不用到内核态</strong></p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/lock-2.png" alt="image-20250225195000352"></p>
+</li>
+<li><p>重量级锁：存在多个线程竞争&#x2F;互斥锁机制竞争锁–<strong>Monitor</strong>–<strong>涉及用户态&#x2F;内核态切换</strong></p>
+<ul>
+<li><p><strong>获取锁流程：</strong></p>
+<ul>
+<li><strong>检测锁状态（Mark Word）：</strong>是否被其他线程持有。若无则CAS尝试写入线程Id</li>
+<li><strong>锁竞争：</strong>若已被其他线程上锁，则写入Monitor排队</li>
+<li><strong>可重入性：</strong>在已持有锁情况下继续获得锁，Re-entrant Count++，锁释放则继续执行</li>
+</ul>
+<p><strong>释放锁：</strong></p>
+<ul>
+<li>执行完一遍Re-entrant Count– ，计数器到0则释放</li>
+<li>Monitor从等待队列中取线程</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="JMM（java-memory-model）"><a href="#JMM（java-memory-model）" class="headerlink" title="JMM（java memory model）"></a>JMM（java memory model）</h2><p><strong>定义：</strong>定义了共享内存中多线程程序读写操作的行为规范</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/memory.png" alt="image-20250225200701858"></p>
+<h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><p>乐观锁思想：乐观的估计，被修改了也没事，重新读共享内存数据，继续重试。</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/CAS.png" alt="image-20250225201444337"></p>
+<ul>
+<li>CAS（compare and Swap）,将两个步骤（检查条件和更新值）合并成一条硬件指令，速度快，避免上下文切换-自旋锁的实现，忙等待（适合执行时间很短的代码-可以很快释放锁）</li>
+<li>CAS用于乐观锁实现-无锁编程-基于原子操作实现</li>
+<li><strong>局限ABA问题：</strong>假设一个线程 A 想要将变量 <code>x</code> 的值从 <code>10</code> 更新为 <code>20</code>，但它在执行 CAS 操作之前，变量 <code>x</code> 的值被其他线程修改为 <code>15</code>，然后又被修改回 <code>10</code>。此时，线程 A 的 CAS 操作会成功，因为它检查到的当前值仍然是 <code>10</code>。然而，实际上变量 <code>x</code> 的值已经发生了变化，这可能导致逻辑错误—-<strong>库存-50 补货+50 逻辑上却认为没出售过和没 补过货</strong></li>
+<li>底层调用的是Unsafe类的方法，由操作系统提供</li>
+</ul>
+<h2 id="谈谈对volatile理解"><a href="#谈谈对volatile理解" class="headerlink" title="谈谈对volatile理解"></a>谈谈对volatile理解</h2><p>用于确保变量的 <strong>可见性</strong> 和 <strong>有序性</strong>。它主要用于多线程环境下，保证一个线程对变量的修改能被其他线程<strong>立即看到</strong></p>
+<p>可见性：线程A修改变量，线程B可能访问的是过期的值</p>
+<ul>
+<li>线程的工作内存存了变量过期的缓存</li>
+<li>JVM虚拟机里的JIT（即时编译器）优化了代码 ！stop&#x3D;&#x3D;true</li>
+</ul>
+<p>重排序：编译器、处理器为了优化程序性能，对指令执行顺序进行调整的一种行为-导致数据不一致</p>
+<p>给变量加volatile可以解决上述问题：底层原理是<strong>基于内存屏障</strong>（确保<strong>屏障之前的指令不会被重排序到屏障之后</strong>，屏障之后的指令也不会被重排序到屏障之前）和对编译器&#x2F;<strong>处理器优化的限制</strong>–针对共享线程变量</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/volatile.png" alt="image-20250225204747837"></p>
+<h2 id="什么是AQS（AbstractQueuedSynchronizer）"><a href="#什么是AQS（AbstractQueuedSynchronizer）" class="headerlink" title="什么是AQS（AbstractQueuedSynchronizer）"></a>什么是AQS（AbstractQueuedSynchronizer）</h2><ul>
+<li>一种锁机制，作为一个基础框架使用（ReentrantLock\Semaphore用其实现），公平锁&#x2F;非公平锁都可以实现</li>
+</ul>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/AQS.png" alt="image-20250226125853358"></p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/AQS-2.png" alt="image-20250226125928183"></p>
+<p>公平锁：新来线程乖乖排队 </p>
+<p>非公平锁：新的线程抢占队列头线程资源</p>
+<h2 id="ReentrantLock（可重入锁）原理"><a href="#ReentrantLock（可重入锁）原理" class="headerlink" title="ReentrantLock（可重入锁）原理"></a>ReentrantLock（可重入锁）原理</h2><p>CAS+AQS，支持公平锁&#x2F;非公平锁（默认）</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/ReentrantLock.png" alt="image-20250226130522047"></p>
+<h2 id="synchronized-和Lock-区别"><a href="#synchronized-和Lock-区别" class="headerlink" title="synchronized 和Lock 区别"></a>synchronized 和Lock 区别</h2><p><strong>使用</strong>：C++底层实现 &#x2F; Java-需要显示获得释放锁</p>
+<p><strong>功能</strong>：独占锁&#x2F;提供多种锁类型（ReetrantLock）</p>
+<p><strong>性能：</strong>简单场景锁升级&#x2F;复杂场景比前者重量级性能好</p>
+<h2 id="死锁产生条件"><a href="#死锁产生条件" class="headerlink" title="死锁产生条件"></a>死锁产生条件</h2><p><strong>必要条件及预防：</strong></p>
+<ul>
+<li>互斥<ul>
+<li>资源共享</li>
+<li>资源复制</li>
+</ul>
+</li>
+<li>请求保持<ul>
+<li>一次性分配</li>
+<li>资源剥夺</li>
+</ul>
+</li>
+<li>不剥夺<ul>
+<li>允许剥夺（优先级）</li>
+<li>时间片轮转</li>
+</ul>
+</li>
+<li>循环等待<ul>
+<li>编号有序分配</li>
+<li><strong>银行家算法</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>死锁检测：</strong></p>
+<ul>
+<li><strong>资源图分配</strong></li>
+<li>jdk自带工具<ul>
+<li>jps命令查看JVM运行进程PID</li>
+<li>jstack -l 进程PID 查看进程内线程信息</li>
+</ul>
+</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<ul>
+<li><strong>资源剥夺</strong>：选择一个或多个进程，剥夺其持有的资源，分配给其他进程。</li>
+<li><strong>终止进程</strong>：选择一个或多个进程，终止它们的执行，释放其持有的资源。</li>
+<li><strong>重新启动</strong>：在某些情况下，可能需要重新启动系统以清除死锁状态。</li>
+</ul>
+<h2 id="聊一下ConcureentHashMap"><a href="#聊一下ConcureentHashMap" class="headerlink" title="聊一下ConcureentHashMap"></a>聊一下ConcureentHashMap</h2><p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/conHP-1.png" alt="image-20250226135637272"></p>
+<p><strong>多个线程hash一个segment的时候，要等待锁，性能下降</strong></p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/conHP-2.png" alt="image-20250226135857142"></p>
+<p>JDK1.8，每个节点（Bucket）用synchronized锁链表&#x2F;二叉树首节点</p>
+<h2 id="并发程序出现问题的根本原因"><a href="#并发程序出现问题的根本原因" class="headerlink" title="并发程序出现问题的根本原因"></a>并发程序出现问题的根本原因</h2><p><strong>java并发三大特征</strong></p>
+<ul>
+<li>原子性<ul>
+<li>synchronized&#x2F;JUC里的lock加锁</li>
+</ul>
+</li>
+<li>可见性<ul>
+<li>volatile&#x2F;锁</li>
+</ul>
+</li>
+<li>有序性<ul>
+<li>volatile</li>
+</ul>
+</li>
+</ul>
+<h1 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h1><h2 id="核心参数（执行原理）"><a href="#核心参数（执行原理）" class="headerlink" title="核心参数（执行原理）"></a>核心参数（执行原理）</h2><p>ThreadPoolExecutor(核心线程数量，最大线程数量（核心+救急线程），救急线程生存时间，时间单位，工作队列（无空闲核心线程时加入，满了就开救急线程），线程工厂，拒绝策略（需&gt;求）)</p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/pool.png" alt="image-20250226183313081"></p>
+<p>注意救急队列出手的时机：</p>
+<ul>
+<li>核心线程执行完</li>
+<li>阻塞队列满之后再进线程&amp;&amp;线程数&lt;&#x3D;最大线程数–此时执行最新的线程，再去找阻塞队列</li>
+</ul>
+<h2 id="线程池常见的阻塞队列"><a href="#线程池常见的阻塞队列" class="headerlink" title="线程池常见的阻塞队列"></a>线程池常见的阻塞队列</h2><p><strong>ArrayBlockingQueue</strong></p>
+<p><strong>LinkedBlockingQueue</strong></p>
+<p><img src="/./%E9%9D%A2%E8%AF%95%E7%AF%87-%E5%B9%B6%E5%8F%91/pool-1.png" alt="image-20250226185125593"></p>
+<p>DelayedWorkQueue:优先队列（短时间优先）</p>
+<p>SynchronousQueue:不存储元素，每次插入必须等一个移出</p>
+<h2 id="如何使用核心线程数"><a href="#如何使用核心线程数" class="headerlink" title="如何使用核心线程数"></a>如何使用核心线程数</h2><p>IO密集任务：2N+1 在大量IO任务时，很多线程会被阻塞，多点线程才能为CPU所用</p>
+<p>CPU密集型：N+1 如果线程数过多，会增加CPU的上下文切换开销（<strong>操作系统频繁切换线程</strong>来分配时间片），影响性能</p>
+<p>N为cpu数量</p>
+<h2 id="线程池的种类"><a href="#线程池的种类" class="headerlink" title="线程池的种类"></a>线程池的种类</h2><p><strong>固定线程数</strong> newFixedThreadPool</p>
+<ul>
+<li>无救急线程</li>
+<li>阻塞队列LinkedBlockingQueue 最大容量Integer.MAX_VALUE</li>
+<li>适用于任务量比较平稳，需要限制并发线程数的场景，如服务器端处理客户端请求。</li>
+</ul>
+<p><strong>单线程化的线程池：</strong>SingleThreadExecutor 唯一工作线程（核心）</p>
+<ul>
+<li><p>LinkedBlockingQueue</p>
+</li>
+<li><p>适用顺序执行任务</p>
+</li>
+<li><p>适用于需要保证任务按顺序执行的场景，如串行处理日志记录等</p>
+</li>
+</ul>
+<p><strong>可缓存线程池：</strong>无核心线程（靠急救线程）</p>
+<ul>
+<li>synchronous底层</li>
+<li>线程池中的线程数可以<strong>无限增加</strong>（受系统资源限制），但会复用空闲线程。</li>
+<li>如果线程空闲时间超过60秒，则会被终止并从缓存中移除。</li>
+<li>适合执行大量的耗时较少的任务，特别是对于那些执行时间不确定的短期异步任务。</li>
+</ul>
+<p><strong>提供延迟和周期执行的线程池：</strong></p>
+<ul>
+<li><p>DelayedWorkQueue</p>
+</li>
+<li><p>适用于需要执行周期性任务的场景，如定时清理缓存、定时调度任务等。</p>
+</li>
+</ul>
+<h2 id="为什么不建议用上面的几种Executor创建的线程池？"><a href="#为什么不建议用上面的几种Executor创建的线程池？" class="headerlink" title="为什么不建议用上面的几种Executor创建的线程池？"></a>为什么不建议用上面的几种Executor创建的线程池？</h2><ul>
+<li>前两者阻塞最大长度允许Integer.MAX_VALUE，缓存线程池救急线程最大也到</li>
+</ul>
+<p>Integer.MAX_VALUE，很容易导致内存溢出</p>
+<ul>
+<li><strong>ThreadPoolExecutor根据任务自定义</strong></li>
+</ul>
+<h2 id="谈谈对TheadLocal的理解"><a href="#谈谈对TheadLocal的理解" class="headerlink" title="谈谈对TheadLocal的理解"></a>谈谈对TheadLocal的理解</h2><p><strong>基本概念：</strong>TheadLocal是一个线程局部变量的存储类。它允许每个线程拥有自己的变量副本，这些副本存储在每个线程的TheadLocalMap中</p>
+<p><strong>工作原理：</strong></p>
+<ul>
+<li>内部使用TheadLocalMap存储线程与变量的键值对，键是TheadLocal对象本身，值是传入的value（变量副本）</li>
+<li>set()，get()，remove（）</li>
+</ul>
+<p><strong>应用场景：</strong></p>
+<ul>
+<li>多线程环境下，当某些变量不需要在多个线程之间共享（存储与请求相关的上下文信息，如用户身份信息、请求的开始时间等）</li>
+</ul>
+<p><strong>其内存泄漏问题：</strong></p>
+<ul>
+<li>其key继承了<strong>WeakReference</strong>，为弱引用，内存不够时会自动回收。其值是Object对象，为强引用。如果线程长期存在（例如在使用线程池时，线程会被复用而不是销毁），那么 <code>ThreadLocalMap</code> 中的值就会一直存在，值越来越多导致内存泄漏。</li>
+<li>需显示remove掉值</li>
+</ul>
+
+    </div>
+
+    
+        <hr class="fhr">
+        <div id="vcomments"></div>
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: 食芒果冰 | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="">
+<input type="hidden" id="valine_appKey" value="">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

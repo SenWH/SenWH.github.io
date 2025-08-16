@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        部落格
+    </title>
+    <meta name="description" content= 千里之行，始于足下 >
+    <meta name="keywords" content= Blog >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            场景题
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h2 id="如何定位-优化慢查询"><a href="#如何定位-优化慢查询" class="headerlink" title="如何定位+优化慢查询"></a>如何定位+优化慢查询</h2><p><strong>定位</strong></p>
+<ul>
+<li>开启慢日志</li>
+<li>Explain（模拟优化器执行）<ul>
+<li>key：使用的索引</li>
+<li>type: system（表中只有一行数据) ，const(只有一行索引匹配)，eq_ref（主键或唯一索引的等值连接），ref（非主键非唯一索引），range（索引范围），index（全表索引），all（全表扫描）</li>
+</ul>
+</li>
+</ul>
+<p><strong>优化角度</strong></p>
+<ul>
+<li>数据量<ul>
+<li>数据量越大IO次数越多</li>
+</ul>
+</li>
+<li>取数据方式<ul>
+<li>磁盘还是缓存</li>
+<li>是否能结合谓词条件命中全局索引</li>
+</ul>
+</li>
+<li>数据加工方式<ul>
+<li>排序、子查询、聚合、关联等取到临时表中，对数据加工</li>
+<li>合适的join方式</li>
+</ul>
+</li>
+</ul>
+<p><strong>优化思路</strong></p>
+<ul>
+<li><p>减少数据扫描</p>
+<ul>
+<li><p>数据分页优化</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">select * from table_demo <span class="type">where</span> <span class="variable">type</span> <span class="operator">=</span> ?  limit A,B; </span><br><span class="line">---limit+offset，每次查询B条数据都要扫描跳过前A-<span class="number">1</span>条数据</span><br><span class="line">    </span><br><span class="line">lastId = <span class="number">0</span> or <span class="title function_">min</span><span class="params">(id)</span></span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">select * from table_demo <span class="type">where</span> <span class="variable">type</span> <span class="operator">=</span> ? and id &gt;&#123;#lastId&#125;  limit ?;</span><br><span class="line">lastId = max(id)</span><br><span class="line">&#125; <span class="keyword">while</span> (isNotEmpty)</span><br><span class="line">---记录偏移ID，新页直接定位到上一次的<span class="type">ID</span></span><br><span class="line">    </span><br><span class="line"><span class="variable">minId</span> <span class="operator">=</span> min(id) maxId = max(id)</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> minId; i&lt;= maxId; i+=pageSize)&#123;</span><br><span class="line">select * from table_demo <span class="type">where</span> <span class="variable">type</span> <span class="operator">=</span> ? and id between i and i+ pageSize;</span><br><span class="line">&#125;</span><br><span class="line">--- between and，分段查询 虽然可以减少扫描遍历情况，但是不适用于查询的键分布不均的情况，多了一些不必要的查询</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p>Groud By分组优化</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select job , avg(sal) from table_demo <span class="type">where</span>  <span class="variable">job</span> <span class="operator">=</span> ‘manager<span class="string">&#x27; group by job</span></span><br><span class="line"><span class="string">先过滤后分组</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p>范围查询</p>
+<blockquote>
+<p>单键索引: 查询到主键索引时，先排序后回表Multi Range Read(MRR)），可以减少IO次数（一个页中有多个连续行）</p>
+<p>联合索引：Mysql5.6+，等式放范围查询的右边会通过索引下推过滤回表的主键数，当然：等值最左匹配才是优解</p>
+</blockquote>
+</li>
+<li><p>Order By</p>
+<blockquote>
+<p>索引覆盖排序 ：order前建立索引时已经排好序</p>
+</blockquote>
+</li>
+<li><p>业务划分</p>
+<blockquote>
+<p>date &#x3D; now; minDate &#x3D; now - 10 days<br>while(date &gt; minDate) {<br>select * from order where order_date&#x3D;{<em>#date} and status&#x3D;’S’ and update_time &lt; now-5min limit 500</em>  date &#x3D; data + 1}</p>
+<p>对比: 快在可以对order_date索引（status如果太均匀失效了），避免一次性读太大量的表进内存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from order where status=<span class="string">&#x27;S&#x27;</span> and update_time &lt; now-5min  limit <span class="number">500</span></span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
+</li>
+<li><p>数据库结构优化</p>
+<ul>
+<li>范式优化：消除冗余</li>
+<li>反范式优化：适当加冗余-避免join操作（有时候不满足第三范式也能提升速度）</li>
+<li>按物理结构拆分表，避免全表扫描（例如按日期）</li>
+</ul>
+</li>
+<li><p>SQL语句优化</p>
+<ul>
+<li>区分 in 和 exists（in先执行子查询后逐行判断-适合内表小的情况（子查询返回的结果少），后者遍历外表逐行执行子查询，遇到匹配项停止减少扫描。因为每次子查询需要开销，在少量数据的时候还是用in）</li>
+<li>尽量避免使用子查询-&gt;join&#x2F;反范式优化</li>
+</ul>
+</li>
+<li><p>大表优化</p>
+<ul>
+<li>分库分表</li>
+<li>读写分离（主从复制）</li>
+<li>定期归档（历史数据移除，减少主表大小）</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+        <hr class="fhr">
+        <div id="vcomments"></div>
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: 食芒果冰 | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="">
+<input type="hidden" id="valine_appKey" value="">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

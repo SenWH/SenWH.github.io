@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        部落格
+    </title>
+    <meta name="description" content= 千里之行，始于足下 >
+    <meta name="keywords" content= Blog >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="部落格" type="application/atom+xml">
+</head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            八股问答
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h1><h3 id="面向对象和面向过程的区别？"><a href="#面向对象和面向过程的区别？" class="headerlink" title="面向对象和面向过程的区别？"></a>面向对象和面向过程的区别？</h3><ul>
+<li>主要体现在解决问题的方式不同，面向过程以过程，或者说是步骤为中心去解决问题，具体来说可以将一个线性的任务分割为一个个子过程，优点是结构简单，对比面向对象的话少了实例建立开销，但是涉及到复杂的编程时较困难。对于面向对象思想来说以对象实体为核心，将问题中涉及到的实体抽象出来，赋予属性和方法。通过多个实体协作完成任务，在需要修改时通常只要对某个实体属性或者方法修改，更易于拓展。</li>
+</ul>
+<h3 id="抽象类和接口的区别，使用场景？"><a href="#抽象类和接口的区别，使用场景？" class="headerlink" title="抽象类和接口的区别，使用场景？"></a>抽象类和接口的区别，使用场景？</h3><ul>
+<li>首先从设计思想上来说，抽象类就是将一组有相似方法或功能的类里的方法或属性抽象出来封装为抽象类，目的就是相当于提供了一个类模板，包含共同的方法和状态，从而依据该模板生成子类，体现一种垂直继承，类只能继承一个抽象类。接口则是对不同类的相似方法进行抽象，提供一组行为规范，体现一种水平实现的方式，一个类可以实现多个接口，以获得多种方法功能。从结构差异来说，由于抽象类生来就是为了被继承，所以它的方法都是public和protect，另外抽象类里的抽象方法都需要被非抽象类的子类实现，也就是说严格按照类模板生成子类。对于接口来说，它的方法都是java8之前都是抽象方法，也就是说实现接口时，抽象方法都需要被实现。</li>
+</ul>
+<h3 id="聊聊JAVA的反射"><a href="#聊聊JAVA的反射" class="headerlink" title="聊聊JAVA的反射"></a>聊聊JAVA的反射</h3><ul>
+<li>首先反射的反对应的就是正，所谓正其实就是编译前就确定了要创建的对象类型，通过new的方式直接创建，那这种方法其实代码耦合度比较大，每次修改对象类型都要通过改源代码。反射其实就是提供了一种机制，程序在运行时才确定具体类型，也就是说可以通过传参的方式确定某个具体类，降低了耦合性。所谓的反其实就说通过局部信息获取类的全局信息，通过全限定名，即可或者对应对象的构造函数。它的底层原理其实就说每个类维护一个class对象，里面包含类所有的信息，包括属性，方法等。通过找到class对象，即可调用对应方法，访问属性。当然这种方法缺点也很明显， 一个是性能差点，因为每次调用方法要去匹配对应的class对象和并获取方法，另外能访问状态，如果是私有状态，就意味破坏了类的封装性。至于应用场景的话，在动态代理时就用到了反射，它的原理就是通过class对象实例化出一个代理类，反射调用执行对应方法。</li>
+</ul>
+<h3 id="聊聊JAVA泛型"><a href="#聊聊JAVA泛型" class="headerlink" title="聊聊JAVA泛型"></a>聊聊JAVA泛型</h3><ul>
+<li>泛型本质就是参数化类型，也就是说在使用时才指定具体的类型，例如在一些集合中用到。这样有几个好处，一个是编译时就能通过类型检查，是否每个集合元素都是合理的，而不用等到运行才出错。第二个就是泛型其实也是一种多态的体现，底层代码只需要用一个参数来表示传入类型，避免冗余代码。</li>
+</ul>
+<h3 id="JAVA中的异常"><a href="#JAVA中的异常" class="headerlink" title="JAVA中的异常"></a>JAVA中的异常</h3><ul>
+<li>异常体系的根是Throwable继承Object，他有两个分支，分别是Error和Exception，Error通常是内存溢出，栈溢出，比较严重的错误，程序无法处理。而Exception包括运行时异常和非运行时异常，前者通常是运行中出现的错误数组越界、空指针，不需要实现抛出异常，因为代码逻辑应该在代码审查阶段应该发现，后者则是IO，或则sql语句这类的异常，需要显示抛出，因为通常由于外部环境影响，在设计代码前要通过异常机制处理可能出现的问题。throw将方法体内部主动扔出异常，包括运行和非运行。throws则是在方法名声明非运行异常。</li>
+</ul>
+<h3 id="Java中的集合"><a href="#Java中的集合" class="headerlink" title="Java中的集合"></a>Java中的集合</h3><ul>
+<li>Java集合有两个父接口，Collection下的子接口包括list（实现类有ArrayList，LinkedList，Vector），set（HashSet,TreeSet），queue(包括优先级队列，双向队列等)，Map的实现类有HashMap，线程安全的ConcurrentHashMap，HashTable。按顺序的有基于红黑树的TreeMap，LinkedHashMap</li>
+</ul>
+<h3 id="Java中String，StringBuffer，StringBuilder"><a href="#Java中String，StringBuffer，StringBuilder" class="headerlink" title="Java中String，StringBuffer，StringBuilder"></a>Java中String，StringBuffer，StringBuilder</h3><ul>
+<li>String底层是一个final类型的char数组，保证了String的不可变性。利用String的不可变性，其常被用于做Hash的Key值，另外JVM在堆中维护的字符串常量池页要求不可变性，当然不可变性页也意味它是线程安全的。StringBuilder提供了字符串拼接的方法，底层是通过创建新的数组，将旧的数组复制过去，但它没控制并发安全，所以是不安全的。StringBuffer也是提供了字符串的拼接方法，但它是线程安全的。底层是通过syncronized加在append等方法上，保证线程安全。</li>
+</ul>
+<h1 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h1><h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><h3 id="讲讲线程池的工作原理？"><a href="#讲讲线程池的工作原理？" class="headerlink" title="讲讲线程池的工作原理？"></a>讲讲线程池的工作原理？</h3><ul>
+<li>首先判断当前线程是否小于核心线程数，若小于则创建新线程执行任务。若大于核心线程数则将任务放入阻塞队列，此时阻塞队列已满，且当前线程数小于总线程数，则创建新线程执行任务。如果已达最大线程数，则对新任务执行拒绝策略。当线程执行完首次任务后，阻塞从队列中取出任务或者判断是否到存活时间结束线程。<ul>
+<li>这里需要注意一个点：新线程提交时，先考虑创建线程而不是判断核心线程有没有空闲（判断线程状态需要加锁开销），未到核心线程先创建新线程</li>
+</ul>
+</li>
+</ul>
+<h3 id="核心线程数在不执行任务时，是如何判断有新任务需要执行？"><a href="#核心线程数在不执行任务时，是如何判断有新任务需要执行？" class="headerlink" title="核心线程数在不执行任务时，是如何判断有新任务需要执行？"></a>核心线程数在不执行任务时，是如何判断有新任务需要执行？</h3><ul>
+<li>线程初次提交任务（firsetTask）时直接执行，执行完在while里获取阻塞队列的任务task &#x3D; getTask()，如果线程小于核心线程数take()，线程阻塞等待任务，非核心线程数poll（time，unit）阻塞time存活时间返回null，退出循环，线程结束</li>
+</ul>
+<h3 id="如何设计一个类似线程池的阻塞队列？"><a href="#如何设计一个类似线程池的阻塞队列？" class="headerlink" title="如何设计一个类似线程池的阻塞队列？"></a>如何设计一个类似线程池的阻塞队列？</h3><ul>
+<li>数据结构：有界队列考虑数组固定容量防止内存溢出，适合流量控制的场景，写入取出用同一把锁性能差。无界队列考虑链表，适合任务数量可预计的场景，有内存溢出的风险，写入取出用同不同锁。优先级队列：堆的结构。SynchronousQueue，直接提交，适合高吞吐场景</li>
+<li>线程安全：take()-&gt;ReentrantLock上锁+condition.await()等待时释放锁，此时while在循环判断队空，当队存在元素signal唤醒线程。ReentransLock配合condition使用，当执行await时候，线程进入等待状态加入Condition等待队列，signal释放锁后，Condition里的线程重新加入AQS等待队列</li>
+</ul>
+<h3 id="源码细节"><a href="#源码细节" class="headerlink" title="源码细节"></a>源码细节</h3><ul>
+<li>execute（command）-&gt;ctl变量（高三位表示运行池状态，低29位表示当前线程数）-CAS线程数量添加工作线程addworker-&gt;创建线程addworker t.start&#x2F;加入队列workQueue.offer(command)&#x2F;addworker&#x2F;reject-&gt;work.run()-&gt;while(task !&#x3D; null || (task &#x3D; getTask()) !&#x3D; null)-&gt;在getTask（）中，take()方法阻塞等待队列进新线程，若大于核心线程且超时poll（time，unit），ctl–</li>
+<li>关闭Shundown interruptIdleWorkers，关闭空闲出来的线程；Shundownnow interruptWorkers，黑猫白猫统统关掉</li>
+<li>拒绝策略：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AbortPolicy :throw new RejectedExecutionException 抛异常</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DiscardPolicy:&#123;&#125; 什么也不做（丢弃）</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DiscardOldestPolicy: e.getQueue().poll(); e.execute(r);  拿oldest（头节点）</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CallerRunsPolicy: r.run();  传入的线程为this，提交execute任务的线程执行该任务，可能会导致后续提交被阻塞</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Volatile-Synchronized-ReentransLock"><a href="#Volatile-Synchronized-ReentransLock" class="headerlink" title="Volatile Synchronized ReentransLock"></a>Volatile Synchronized ReentransLock</h2><h3 id="使用场景区别？"><a href="#使用场景区别？" class="headerlink" title="使用场景区别？"></a>使用场景区别？</h3><ul>
+<li>Volatile 修饰单个变量，保证在多线程环境下的可见性和防止编译器对该<strong>变量</strong>进行重排序（不提供原子性保障），没有获取锁释放锁的操作，轻量级—常用在线程&#x2F;状态标志位</li>
+<li>Synchronized 用于方法或者代码块同步，不需要显示获得锁&#x2F;释放锁，线程获得锁失败后被阻塞后，不能被中断，因为synchronized实现线程阻塞是在操作系统级别，不会显示的去检查锁中断标志位。第三在性能方面，一个它是一种非公平锁，在一定程度上减少线程等待唤醒的开销。同时引入了锁升级的过程，根据锁的竞争程度，去升级锁，尽可能减少锁的开销。本意是尽可能简化上锁释放锁的操作。</li>
+<li>ReentransLock 提供更细粒度的并发控制，也就是说提供更多的api操作。 首先它需要显示获得锁和释放锁，其次它可以通过检查线程中断标志位，使得等待获取锁的线程可以被中断。第三，它可以实现公平锁或者非公平锁，另外它也提供了一种超时等待的机制，通过CAS去获取锁，获取锁失败则取消等待，避免线程阻塞引发性能开销。</li>
+</ul>
+<h3 id="在多线程环境下，Volatile-如何保证变量的可见性和禁止重排序？为什么它不能保证原子性？结合内存屏障和-JMM（Java内存模型）-解释其原理。"><a href="#在多线程环境下，Volatile-如何保证变量的可见性和禁止重排序？为什么它不能保证原子性？结合内存屏障和-JMM（Java内存模型）-解释其原理。" class="headerlink" title="在多线程环境下，Volatile 如何保证变量的可见性和禁止重排序？为什么它不能保证原子性？结合内存屏障和 JMM（Java内存模型） 解释其原理。"></a>在多线程环境下，Volatile 如何保证变量的可见性和禁止重排序？为什么它不能保证原子性？结合<strong>内存屏障</strong>和 <strong>JMM（Java内存模型）</strong> 解释其原理。</h3><ul>
+<li>首先在Java的内存模型中，为了提升性能，每个线程拥有自己独立的本地缓存，还有共享内存。当然，引入了缓存之后无可避免的就会出现一致性的问题。那么Volatitle变量其实是一种轻量级的方式在一定程度上解决了一致性问题。具体来说，当使用Volatitle修饰一个变量的时候，后续在对这个变量进行读写操作的时候，会在指令执行前插入一个内存屏障，它可以使变量操作前的写操作的执行结果直接写入共享内存，对变量的读操作总是越过缓存去读共享内存中的数据，这样就保证了数据的可见性。除此之外，JVM虽然可以保证变量间相互有直接依赖关系的变量执行过程中的有序性，但是对于无直接依赖关系的变量可以会执行指令重排序，在多线程的环境下可能会出现并发问题。那么内存屏障同时也可以保证屏障前后的指令不会被编译器重排序导致出现预期以外的结果。</li>
+</ul>
+<h3 id="volatile-如何防止指令重排序？举个单例模式中双重检查锁失效的例子。"><a href="#volatile-如何防止指令重排序？举个单例模式中双重检查锁失效的例子。" class="headerlink" title="volatile 如何防止指令重排序？举个单例模式中双重检查锁失效的例子。"></a>volatile 如何防止指令重排序？举个单例模式中双重检查锁失效的例子。</h3><p>对象创建包括：分配内存空间、对象初始化（分配零值-插入写屏障，禁止重排序），引用指向对象（给instance赋值-写操作-立刻刷新道内存），如果后两步重排序，会导致引用访问一个未初始化的对象导致出错</p>
+<h3 id="公平锁和非公平锁是什么？"><a href="#公平锁和非公平锁是什么？" class="headerlink" title="公平锁和非公平锁是什么？"></a>公平锁和非公平锁是什么？</h3><ul>
+<li>公平锁是指线程获取互斥锁遵循先来先服务的原则，ReentroLock可以实现这样的功能，使用一个队列存储等待的线程，每次锁空闲时总是唤醒等待时间最长的线程获取锁，而新来的任务会追加到队列尾部。–要求线程执行顺序（银行业务），当然它其实就是牺牲了性能，避免线程饥饿的情况，因为每次都需要对线程进行阻塞和唤醒。非公平锁是指任何线程都可以尝试获得锁，例如Synchroniezd和ReentroLock都可以实现非公平锁，由于新来的任务可以直接尝试获得锁，减少线程等待&#x2F;唤醒的开销，可能会引起线程饥饿。—吞吐量优先的场景</li>
+</ul>
+<h3 id="可重入锁和不可重入锁？"><a href="#可重入锁和不可重入锁？" class="headerlink" title="可重入锁和不可重入锁？"></a>可重入锁和不可重入锁？</h3><ul>
+<li>可重入锁是指允许同一个线程多次获得同一把锁而不导致死锁。在递归调用的时候可能会重复访问同一把锁，使用可重复锁避免死锁情况发生。</li>
+</ul>
+<h3 id="Reentrantlock如何实现公平锁的？"><a href="#Reentrantlock如何实现公平锁的？" class="headerlink" title="Reentrantlock如何实现公平锁的？"></a>Reentrantlock如何实现公平锁的？</h3><ul>
+<li>使用了一个等待队列来维护管理等待获得锁的线程，如果队列无线程则新来的线程可以直接尝试获得锁，如果队列里有线程，只允许队头的线程获得锁，新来的线程加到队列尾部。</li>
+</ul>
+<h3 id="在-JDK-1-6-之后引入了锁升级机制，从偏向锁到轻量级锁再到重量级锁。请详细说明每个阶段的触发条件，以及为什么需要这种设计？结合对象头中的-Mark-Word-结构说明。"><a href="#在-JDK-1-6-之后引入了锁升级机制，从偏向锁到轻量级锁再到重量级锁。请详细说明每个阶段的触发条件，以及为什么需要这种设计？结合对象头中的-Mark-Word-结构说明。" class="headerlink" title="在 JDK 1.6 之后引入了锁升级机制，从偏向锁到轻量级锁再到重量级锁。请详细说明每个阶段的触发条件，以及为什么需要这种设计？结合对象头中的 Mark Word 结构说明。"></a>在 JDK 1.6 之后引入了锁升级机制，从偏向锁到轻量级锁再到重量级锁。请详细说明每个阶段的触发条件，以及为什么需要这种设计？结合对象头中的 <strong>Mark Word</strong> 结构说明。</h3><ul>
+<li>允许锁从偏向锁开始，按照锁的竞争情况将锁升级成轻量级锁和重量锁。旨在减少线程获取锁的开销同时保证在高并发情况下的线程安全。</li>
+<li>首先一个线程首次访问同步块获得锁的时候，锁如果还处于空闲状态，会在对象头中的MarkWord记录该线程id，并且标记未偏向锁，如果期间没有其他线程访问锁，下一次该线程获得锁的时候，线程id匹配了，不用重新通过CAS取获得锁。当一个线程发现锁已经被其他线程持有并且是偏向锁时，偏向锁撤销并升级为轻量级锁，在栈帧中创建锁记录，将对象头的MarkWord放到锁记录中（恢复时放回），然后CAS尝试将对象头的MarkWord替换成指向当前线程的指针，若成功则意味获得锁。线程通过自旋CAS获得锁，如果在一定次数之内如果没获取锁成功，意味着锁竞争激烈，膨胀为重量锁。将MarkWord指向对象的Monitor。当一个线程尝试获取重量级锁但没能成功的时候，将线程放入等待队列，被操作系统挂起，当持有锁线程释放锁是，队列中的线程会被唤醒去竞争锁。</li>
+</ul>
+<h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h2><h3 id="底层原理？ThreadLocal-如何实现线程间数据隔离？结合-Thread、ThreadLocalMap-和-Entry-的结构说明其存储机制。为什么-Entry-的-key-使用弱引用（WeakReference）？"><a href="#底层原理？ThreadLocal-如何实现线程间数据隔离？结合-Thread、ThreadLocalMap-和-Entry-的结构说明其存储机制。为什么-Entry-的-key-使用弱引用（WeakReference）？" class="headerlink" title="底层原理？ThreadLocal 如何实现线程间数据隔离？结合 Thread、ThreadLocalMap 和 Entry 的结构说明其存储机制。为什么 Entry 的 key 使用弱引用（WeakReference）？"></a>底层原理？ThreadLocal 如何实现线程间数据隔离？结合 Thread、ThreadLocalMap 和 Entry 的结构说明其存储机制。为什么 Entry 的 key 使用弱引用（WeakReference）？</h3><ul>
+<li>允许每个线程创建维护独立的变量副本，底层原理是每个线程维护一个ThreadLocalMap，key为ThreadLocal，value为Entry，Entry存放的是对key的一个弱引用以及具体存放的Object value值。这样设计是为了保证，在不需要引用某个ThreadLocal时，由于线程池复用了线程，线程仍持有对ThreadLocalMap的引用，也就是继续持有对key的引用，导致内存泄漏。所以map持有的是对key的弱引用，当没有其他强引用，即可被回收。</li>
+<li>直接用key作为位置索引不就行了吗？为什么要处理引用？ —遇到哈希冲突，只靠key分辨不出实例，需要通过比较内存地址…</li>
+</ul>
+<h3 id="请对比强引用（Strong-Reference）、软引用（Soft-Reference）、弱引用（Weak-Reference）和虚引用（Phantom-Reference）的特点，并说明它们的垃圾回收行为"><a href="#请对比强引用（Strong-Reference）、软引用（Soft-Reference）、弱引用（Weak-Reference）和虚引用（Phantom-Reference）的特点，并说明它们的垃圾回收行为" class="headerlink" title="请对比强引用（Strong Reference）、软引用（Soft Reference）、弱引用（Weak Reference）和虚引用（Phantom Reference）的特点，并说明它们的垃圾回收行为"></a>请对比强引用（Strong Reference）、软引用（Soft Reference）、弱引用（Weak Reference）和虚引用（Phantom Reference）的特点，并说明它们的垃圾回收行为</h3><ul>
+<li>强引用是对象存活的基础，永远不会回收。软引用回收时机是内存不足的时候，比较大的缓存（视频图片缓存）。弱引用的话是下一次GC的时候会被回收，一些临时缓存。虚引用的话主要是用于跟踪对象回收事件，用于堆外内存管理。</li>
+</ul>
+<h3 id="虚引用与堆外内存管理"><a href="#虚引用与堆外内存管理" class="headerlink" title="虚引用与堆外内存管理"></a>虚引用与堆外内存管理</h3><p>堆内创建一个DirectByteBuffer 实例，用于管理（指向）堆外内存同时注册一个Cleaner（也就是虚引用），当缓存实例被回收时，会触发cleaner执行堆外内存的回收</p>
+<h3 id="ThreadLocalMap-如何处理哈希冲突？为什么采用线性探测法而非链表法？在扩容时如何保证效率？"><a href="#ThreadLocalMap-如何处理哈希冲突？为什么采用线性探测法而非链表法？在扩容时如何保证效率？" class="headerlink" title="ThreadLocalMap 如何处理哈希冲突？为什么采用线性探测法而非链表法？在扩容时如何保证效率？"></a>ThreadLocalMap 如何处理哈希冲突？为什么采用线性探测法而非链表法？在扩容时如何保证效率？</h3><ul>
+<li>线性探测在多个条目被映射到相邻位置时，查找效率较低。但在使用ThreadLocal的场景下，每个线程只会用少量的ThreadLocal，负载因子没那么高，拉链法要创建新的结点，开销更大，线性探测效率更高。为了使扩容次数尽量少，在插入新值，更新值或者扩容时都会遍历链表，找到key为null的值，回收value</li>
+<li>set一个值时，key计算位置索引，判断key和当前位置的Entry.get（key）是否一致，若一致则更新值，否则寻找下一个位置</li>
+</ul>
+<h3 id="设计一个-ThreadLocal-的替代方案"><a href="#设计一个-ThreadLocal-的替代方案" class="headerlink" title="设计一个 ThreadLocal 的替代方案"></a><strong>设计一个 ThreadLocal 的替代方案</strong></h3><ul>
+<li>主要要保证线程隔离和线程安全-&gt;使用ConcurrentHashMap，key为ThreadId，value为值。通过锁控制防止线程冲突。</li>
+</ul>
+<h3 id="CAS原理和应用"><a href="#CAS原理和应用" class="headerlink" title="CAS原理和应用"></a>CAS原理和应用</h3><ul>
+<li>使用基于硬件指令实现比较交换的原子操作，实现无锁操作。应用有原子类AtomicInteger自增自减，数据库的乐观锁实现。它通常会结合自旋操作去不断尝试获得锁，在高并发的场景下可能会导致CPU使用率过高，可以考虑采用指数退避算法或升级为互斥锁。</li>
+</ul>
+<h3 id="CopyOnWriteArrayList-如何实现线程安全？在哪些场景下使用它？频繁写入时为什么性能较差？"><a href="#CopyOnWriteArrayList-如何实现线程安全？在哪些场景下使用它？频繁写入时为什么性能较差？" class="headerlink" title="CopyOnWriteArrayList 如何实现线程安全？在哪些场景下使用它？频繁写入时为什么性能较差？"></a>CopyOnWriteArrayList 如何实现线程安全？在哪些场景下使用它？频繁写入时为什么性能较差？</h3><ul>
+<li>适合于读多于写，对于实时性要求不高的场景。读不加锁，意味着它是快照读，读到不一定是最新的数据。写操作，上锁进行写时复制，如果频繁写的话，意味着大量的写时复制，导致性能下降。</li>
+</ul>
+<h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h3 id="索引失效的情况？为什么会失效？"><a href="#索引失效的情况？为什么会失效？" class="headerlink" title="索引失效的情况？为什么会失效？"></a>索引失效的情况？为什么会失效？</h3><ul>
+<li>首先在使用联合索引时不满足最左匹配原则，最左匹配原则是指在联合索引查询条件中，从联合索引最左列开始匹配。因为联合索引建立时最左列索引全局有序，后续列的有序性要在前列的值确定后才能保证。其次使用联合索引时，若按照最左匹配遇到了非等式，后续的索引失效，索引可以找到范围起始点，之后根据链表组成的叶子结点遍历行，导致后续用不上索引。对索引列运算或者使用函数也会失效，因为索引是基于原始值建立的，如果需要运算则需要全表查询字段后运算，所以可以考虑先在内存把索引的值计算查来作为条件。当然索引的列类型合提供值类型不一致时会发生类型隐式转换，也是对索引的运算会失效。另外，like 关键字的模糊索引也可能会导致索引失效，当占位符在最左侧，跟不满足最左匹配的原理一样，导致字符串前缀没用上。还有使用or的时候，如果有两个条件以上，其中一个条件无索引就会导致全表查找，全表查找包括所有结果，也没必要使用含索引的列。</li>
+</ul>
+<h3 id="如何判断索引失效？"><a href="#如何判断索引失效？" class="headerlink" title="如何判断索引失效？"></a>如何判断索引失效？</h3><ul>
+<li>使用explain关键字，首先看type类型看索引是否命中以及命中的类型，主要有索引没命中全表查找all，index全索引树查找，range查找范围索引，还有非唯一索引，唯一索引。key中可以看命中的索引，extra列主要表示查询过程的一些额外信息，例如Using filesort，指不能通过索引的有序性查找结果集，而是要多次IO完成排序。using index 表示使用了索引。Using tempporary表示在连接或者排序过程中创建临时表，有额外的开销。</li>
+</ul>
+<h3 id="慢查询定位以及如何优化慢查询"><a href="#慢查询定位以及如何优化慢查询" class="headerlink" title="慢查询定位以及如何优化慢查询"></a>慢查询定位以及如何优化慢查询</h3><ul>
+<li>开启慢日志，设置慢日志时间阈值，通过日志定位查询的语句。首先查询查询耗时主要有三个部分，一个是内存计算，第二个是IO次数影响IO总传输时间，第三个是磁盘寻址。优化慢查询就是优化这三个方面，首先是sql语句优化，对于limit分页查找，可以转换成索引分段查询，例如利用索引的有序性，定位到起点，避免深分页性能开销。对于分组排序，尽量在分组前过滤条件，而不只依赖having by。排序的话考虑，索引建立。 第二点就是索引建立和防止失效。 第三个对于单表过大，一是考虑满足三范式，消除冗余信息减小表大小。而是考虑分库分表，减少IO次数，例如按时间分片。</li>
+</ul>
+<h3 id="建立索引要考虑哪些因素？"><a href="#建立索引要考虑哪些因素？" class="headerlink" title="建立索引要考虑哪些因素？"></a>建立索引要考虑哪些因素？</h3><ul>
+<li>首先对于查询条件中经常用到的列，where或者group by的时候建立索引，频繁查询意味着索引使用率高。另外利用索引的有序性可以优化order by语句。其次对数据均匀，或者说区分大的列建立索引，这样一次索引能过滤大多数数据，意味着过滤有效性高。再者就是要避免索引频繁变动的开销，因为底层是B+树，结点变动考虑分裂合并引发开销。第四点就是，建立索引本质上就是用空间换时间，对于一些小的表没必要建立索引，索引空间开销比时间开销更大就得不偿失了。第五点就是根据查询的内容建立联合索引，增加命中率减少回表，也就是减少IO。那在建立联合索引时也要注意顺序，满足最左匹配原则，防止索引失效。</li>
+</ul>
+<h3 id="一条update语句执行过程"><a href="#一条update语句执行过程" class="headerlink" title="一条update语句执行过程"></a>一条update语句执行过程</h3><ul>
+<li>首先客户端和mysql建立连接，命令进入解析器，包括语法检查，进行预处理，检查是否字段是否有错，生成执行计划，执行器提交命令给innodb引擎。innodb开启一个新事务，命令先写入undo log用于回滚保证事务的原子性，先到缓存buffer poor查找数据是否存在，若存在则直接在缓存中修改，否则到磁盘中获取数据，修改后放入缓存。操作完后将物理命令写入redo log，用于保证数据库的持久性，由于日志是顺序写，比修改数据随机写要快，所以先将日志写回磁盘，这个过程叫write ahead logging。当然在事务提交前还要将逻辑命令写入bin log，bin log用于主从结点同步，为了保证主宕机后的主从一致性，redo log和bin log用的是两阶段提交。在bin log commit之后事务提交，磁盘数据在合适的时机落盘，例如在redo log满时，因为redo log是环形结构，会有数据覆盖导致风险。</li>
+</ul>
+<h3 id="MVCC过程及其会有什么性能瓶颈"><a href="#MVCC过程及其会有什么性能瓶颈" class="headerlink" title="MVCC过程及其会有什么性能瓶颈"></a>MVCC过程及其会有什么性能瓶颈</h3><ul>
+<li>MVCC也就是多版本并发控制，它是一种数据库技术，目的是通过维护数据的多个版本去控制读写的并发，在保证一定事务隔离级别情况下提升系统的性能。它利用了两个核心的元素。一个是Undo log日志，在对某行数据进行写操作时，会在undo log日志中生成一个数据行的版本，那么同一数据行各版本通过指针相连形成一个版本链，各数据行会有唯一的事务id标识，以表示该版本对应的事务id。第二个是Read View读快照，它里面维护着活跃事务id集合也就是未提交的事务id，另外还有最小活跃事务id和最大事务id，以及创建快照的事务id。根据事务隔离级别的不同，快照生成的时机也不一样。具体来说，以可重复读为例，事务在首次快照读的时候，会生成一个readview，那么为了保证可重复读，当前事务执行过程的每次快照读都用当前的readview，他对于数据行版本的可见规则是这样的，首先会遍历对应数据行的版本链，查找对应版本的事务id，当事务id小于readview中的最小活跃事务id时，就认为在事务快照读前，数据行版本已经提交。因为事务id的分配是全局递增的。那么另一种情况，就是事务id大于最小活跃事务id小于最大事务id时，判断其是否在活跃事务id列表里，如果不在，则版本对事务可见，这种情况是因为它虽然比最小活跃事务id创建的晚，但是在快照生成时已经提交。通过这种方式，就可以实现在一次事务中，每次都能读到相同的数据行版本。当然对于读已提交来说，它总是读最新提交的数据，那么只要在每次快照读时，都生成一个新的readView，也就是及时更新全局活跃事务id状况即可。</li>
+<li>性能开销首先随着事务增多，读视图和版本链存储开销增大，遍历版本链所用的时间花销也增加，本质上还是用空间去换时间，减少加锁释放锁的开销。</li>
+</ul>
+<h3 id="数据库中的锁机制"><a href="#数据库中的锁机制" class="headerlink" title="数据库中的锁机制"></a>数据库中的锁机制</h3><ul>
+<li>首先每个客户端和数据库建立连接时，数据库都会分配一个工作线程进行处理。随着连接数增多，意味着工程线程增多，每个线程开启一个事务的话，多事务并发执行，意味着多线程并发，也就是说会出现并发安全问题，具体来说根据事务隔离级别的不同，会产生脏读、不可重复读、幻读的问题，一个是通过MVCC来控制隔离级别，另外一个就是通过锁机制，来保证并发安全。</li>
+<li>以互斥性来分，主要有共享锁和互斥锁，共享锁是指允许多个事务同时获得锁，通常用在读操作中，例如在读操作下+lock in share mode，或者在可重复读隔离性级别下，普通读会隐式加上共享锁，也就是mysql其实默认级别就是可重复读。互斥锁的话则是，只允许一个事务获得锁，其他事务在访问已上锁的数据行时会被阻塞。互斥锁按粒度分的话，其实又分别全局锁，用于数据库迁移。表锁包括元数据锁，在修改表结构时会隐式上锁。意向锁，用于在要加表锁的时候判断提前判断表内是否有数据行被上互斥锁。更细粒度的话就是行级锁了，包括行锁，也就是锁上单个行记录。间隙锁，锁住记录间隙，左开右开。可重复读级别下，默认用的是Next-key lock。也就是行锁+间隙锁，也就是左开右闭，innodb其实做了性能优化，在等值查询命中的情况下，唯一索引会退化到行锁，非唯一索引由于可能不指一个结果，所以继续寻找右边界直到值不匹配，也就是退化为间隙锁。在不命中的情况下，已查询的数值为中心，左右边界扩展到离自己最近的边界，也就是退化为间隙锁。而范围查询，对于唯一索引，若命中起点则使用行锁，有边界扩展直到不满足条件，补上一个间隙锁。如果是非唯一索引，因为非唯一，命中起点不会退化成行锁，而是左右边界继续拓展，找到不满足条件的边界。对于没使用索引的时候，扫描全表，会导致对所有主键间隙都加锁，相当于对整个表加锁。在使用innodb时，执行update、delete时本身就会隐式上锁，当然如果要显示加锁的话，可以使用for update。当然，前面所提的互斥锁按锁的思想划分其实又叫悲观锁，与之对应就是乐观锁。</li>
+</ul>
+<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><h3 id="线程模型"><a href="#线程模型" class="headerlink" title="线程模型"></a>线程模型</h3><h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><h3 id="Socket-fd文件描述符"><a href="#Socket-fd文件描述符" class="headerlink" title="Socket&#x2F;fd文件描述符"></a>Socket&#x2F;fd文件描述符</h3><ul>
+<li><p>Socket创建时会创建一个数据结构，标识五元组：<strong>：本地IP、本地端口、远程IP、远程端口和协议</strong>，fd是一个索引值，指向一个文件记录表，该表记录内核为每一个进程维护的文件记录信息-Socket结构体。 创建时IP和端口为空，服务端bind()填充本地IP和端口–监听socket，listen建立半连接和全连接队列，客户端connect-开启三次握手，服务端accept接受客户端请求后，生成新的Socket并返回用户。也就是说新创建的Socket填充好客户端的IP&#x2F;端口以能读写。 Socket是操作系统是提供给用户操作IO的接口，fd是操作系统的概念，<strong>操作 Socket 本质上是通过关联的 fd 去操作底层的 I&#x2F;O 资源</strong>。</p>
+</li>
+<li><p>结构体</p>
+<ul>
+<li><p><strong>协议族</strong>（如 AF_INET 表示 IPv4）。</p>
+</li>
+<li><p><strong>协议类型</strong>（如 SOCK_STREAM 表示 TCP，SOCK_DGRAM 表示 UDP）。</p>
+</li>
+<li><p><strong>网络地址和端口</strong>（本地和远端的地址信息）。</p>
+</li>
+<li><p><strong>连接状态</strong>（如监听、已连接、关闭等）。</p>
+</li>
+<li><p><strong>缓冲区</strong>（用于存储待发送或已接收的数据）。</p>
+</li>
+<li><p><strong>其他状态信息</strong>（如超时设置、选项等）。</p>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+        <hr class="fhr">
+        <div id="vcomments"></div>
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: 食芒果冰 | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="">
+<input type="hidden" id="valine_appKey" value="">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
